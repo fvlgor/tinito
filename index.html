@@ -356,7 +356,7 @@
                 <div class="compact-group">
                     <button id="play-all-synth-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
                     <button id="stop-all-synth-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
-                    <button id="rec-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Tones</button>
+                    <button id="rec-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec</button>
                 </div>
             </div>
             <div id="synth-takes-list" class="takes-container">
@@ -366,7 +366,7 @@
 
         <div class="panel" style="resize: none;">
             <div class="panel-header">
-                <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg> MIC LOOPS</span>
+                <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg> MIC LOOPS (320Kbps)</span>
                 <div class="compact-group">
                     <button id="play-all-mic-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
                     <button id="stop-all-mic-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
@@ -390,6 +390,11 @@
         let spectrometerZoomX = 1;
         let spectrometerSizeState = 0;
         let sessionStartTime = Date.now();
+
+        // Mouse Hover tracking states for Spectrogram
+        let mouseX = -1;
+        let mouseY = -1;
+        let isHoveringCanvas = false;
 
         let synthMediaRecorder = null, synthRecordedChunks = [], synthTakes = [];
         let micMediaRecorder = null, micRecordedChunks = [], micTakes = [];
@@ -615,12 +620,6 @@
             cancelAnimationFrame(welcomeAnimId);
             sessionStartTime = Date.now();
             initAudioContext();
-            
-            // Ensure audio context is running on user gesture
-            if (audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
-
             addToneRow(416, 'sine', 0.2, true, false);
             updateMasterToggleUI();
 
@@ -803,8 +802,7 @@
         function initAudioContext() {
             if (isAudioInit) return;
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            // Removed fixed 96000 sampleRate to prevent compatibility crashes on mobile hardware
-            audioCtx = new AudioContext();
+            audioCtx = new AudioContext({ sampleRate: 96000 });
 
             masterGain = audioCtx.createGain();
             masterGain.gain.value = parseFloat(masterVolume.value);
@@ -856,13 +854,13 @@
             }
         }
 
-        masterToggle.addEventListener('click', async () => {
+        masterToggle.addEventListener('click', () => {
             if (!isAudioInit) {
                 initAudioContext();
             } else if (audioCtx.state === 'suspended') { 
-                await audioCtx.resume(); 
+                audioCtx.resume().then(() => updateMasterToggleUI()); 
             } else if (audioCtx.state === 'running') { 
-                await audioCtx.suspend(); 
+                audioCtx.suspend().then(() => updateMasterToggleUI()); 
             }
             updateMasterToggleUI();
             logAction(`Spectrogram State: ${audioCtx.state}`);
@@ -873,16 +871,16 @@
             logAction('Stopped all tones');
         });
 
-        playAllTonesBtn.addEventListener('click', async () => {
+        playAllTonesBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             tones.forEach(t => t.start());
             logAction('Played all tone generators');
         });
 
-        playAllSynthBtn.addEventListener('click', async () => {
+        playAllSynthBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             activeLoopElements.filter(item => item.isSynth).forEach(item => {
                 if(item.audio.paused) {
                     if (!item.sourceNode && audioCtx) {
@@ -908,9 +906,9 @@
             logAction('Stopped all synth loops');
         });
 
-        playAllMicBtn.addEventListener('click', async () => {
+        playAllMicBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             activeLoopElements.filter(item => !item.isSynth).forEach(item => {
                 if(item.audio.paused) {
                     if (!item.sourceNode && audioCtx) {
@@ -937,7 +935,7 @@
         });
 
         masterVolume.addEventListener('input', (e) => {
-            if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
+            if (masterGain) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
         });
 
         savePresetBtn.addEventListener('click', async () => {
@@ -977,7 +975,7 @@
                     recordState('Load Session File');
                     if (!isAudioInit) initAudioContext();
                     masterVolume.value = data.volume || 0.5;
-                    if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
+                    if (masterGain) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
 
                     tones.forEach(t => t.stop());
                     tones = [];
@@ -1116,8 +1114,8 @@
 
                 this.btn = document.createElement('button');
                 this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                this.btn.addEventListener('click', async () => {
-                    if(this.isPlaying) this.stop(); else await this.start();
+                this.btn.addEventListener('click', () => {
+                    if(this.isPlaying) this.stop(); else this.start();
                 });
 
                 this.del = document.createElement('button');
@@ -1163,12 +1161,9 @@
                 }
             }
 
-            async start() {
+            start() {
                 if(!isAudioInit) initAudioContext();
-                if(audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                    updateMasterToggleUI();
-                }
+                if(audioCtx.state === 'suspended') audioCtx.resume().then(() => updateMasterToggleUI());
                 this.stop();
 
                 this.osc = audioCtx.createOscillator();
@@ -1215,15 +1210,26 @@
             logAction(`Added line marker at ${freq.toFixed(2)} Hz`);
         });
 
+        // Mouse hover tracking event listeners for Canvas Container
+        canvasContainer.addEventListener('mousemove', (e) => {
+            let rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            isHoveringCanvas = (mouseX >= 0 && mouseX <= rect.width && mouseY >= 0 && mouseY <= rect.height);
+        });
+
+        canvasContainer.addEventListener('mouseleave', () => {
+            isHoveringCanvas = false;
+            mouseX = -1;
+            mouseY = -1;
+        });
+
         let synthDestStream = null;
         let isRecordingSynth = false;
         let synthRecorderNode = null;
 
-        recTakeBtn.addEventListener('click', async () => {
+        recTakeBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
             if(!synthRecorderNode) {
                 synthRecorderNode = audioCtx.createMediaStreamDestination();
                 synthBus.connect(synthRecorderNode);
@@ -1232,12 +1238,7 @@
 
             if(!isRecordingSynth) {
                 synthRecordedChunks = [];
-                let options = { mimeType: 'audio/webm' };
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options = {}; // Fallback to safe environment default format
-                }
-
-                synthMediaRecorder = new MediaRecorder(synthDestStream, options);
+                synthMediaRecorder = new MediaRecorder(synthDestStream);
                 synthMediaRecorder.ondataavailable = e => synthRecordedChunks.push(e.data);
                 synthMediaRecorder.onstop = () => {
                     let blob = new Blob(synthRecordedChunks, { type: 'audio/webm' });
@@ -1262,18 +1263,12 @@
         let isRecordingMic = false;
         recMicTakeBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
             if(!isRecordingMic) {
                 try {
                     let stream = micStream || await navigator.mediaDevices.getUserMedia({ audio: true });
                     micRecordedChunks = [];
-                    // Removed forced high bitrate parameter to avoid mobile hardware rejection crashes
-                    let options = { mimeType: 'audio/webm' };
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options = {};
-                    }
+                    let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 320000 };
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { audioBitsPerSecond: 320000 };
 
                     micMediaRecorder = new MediaRecorder(stream, options);
                     micMediaRecorder.ondataavailable = e => micRecordedChunks.push(e.data);
@@ -1392,10 +1387,7 @@
                 }
             });
 
-            playBtn.addEventListener('click', async () => {
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                }
+            playBtn.addEventListener('click', () => {
                 if(audioEl.paused) { 
                     if (!loopItemRef.sourceNode && audioCtx) {
                         loopItemRef.sourceNode = audioCtx.createMediaElementSource(audioEl);
@@ -1471,9 +1463,6 @@
 
         micToggleBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
             if(!isMicActive) {
                 try {
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1629,6 +1618,31 @@
                 canvasCtx.font = '20px monospace';
                 canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 8, Math.max(20, topY - 8));
             });
+
+            // Draw translucent aqua line and Hz reading on hover
+            if (isHoveringCanvas && mouseX >= 0) {
+                let rectWidth = canvas.getBoundingClientRect().width;
+                let hoverFreqRatio = mouseX / rectWidth;
+                let hoverFreq = hoverFreqRatio * maxDisplayFreq;
+
+                // Draw translucent aqua line
+                canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+                canvasCtx.lineWidth = 2;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(mouseX * 2, 0);
+                canvasCtx.lineTo(mouseX * 2, h);
+                canvasCtx.stroke();
+
+                // Draw Hz reading box
+                canvasCtx.fillStyle = 'rgba(9, 9, 9, 0.85)';
+                canvasCtx.fillRect(mouseX * 2 + 10, mouseY * 2 - 25, 110, 24);
+                canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+                canvasCtx.strokeRect(mouseX * 2 + 10, mouseY * 2 - 25, 110, 24);
+
+                canvasCtx.fillStyle = '#00ffff';
+                canvasCtx.font = '16px monospace';
+                canvasCtx.fillText(`${hoverFreq.toFixed(1)} Hz`, mouseX * 2 + 18, mouseY * 2 - 8);
+            }
         }
     </script>
 </body>
