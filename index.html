@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -614,6 +615,12 @@
             cancelAnimationFrame(welcomeAnimId);
             sessionStartTime = Date.now();
             initAudioContext();
+            
+            // Ensure audio context is running on user gesture
+            if (audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+
             addToneRow(416, 'sine', 0.2, true, false);
             updateMasterToggleUI();
 
@@ -796,7 +803,8 @@
         function initAudioContext() {
             if (isAudioInit) return;
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioCtx = new AudioContext({ sampleRate: 96000 });
+            // Removed fixed 96000 sampleRate to prevent compatibility crashes on mobile hardware
+            audioCtx = new AudioContext();
 
             masterGain = audioCtx.createGain();
             masterGain.gain.value = parseFloat(masterVolume.value);
@@ -848,13 +856,13 @@
             }
         }
 
-        masterToggle.addEventListener('click', () => {
+        masterToggle.addEventListener('click', async () => {
             if (!isAudioInit) {
                 initAudioContext();
             } else if (audioCtx.state === 'suspended') { 
-                audioCtx.resume().then(() => updateMasterToggleUI()); 
+                await audioCtx.resume(); 
             } else if (audioCtx.state === 'running') { 
-                audioCtx.suspend().then(() => updateMasterToggleUI()); 
+                await audioCtx.suspend(); 
             }
             updateMasterToggleUI();
             logAction(`Spectrogram State: ${audioCtx.state}`);
@@ -865,16 +873,16 @@
             logAction('Stopped all tones');
         });
 
-        playAllTonesBtn.addEventListener('click', () => {
+        playAllTonesBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
             tones.forEach(t => t.start());
             logAction('Played all tone generators');
         });
 
-        playAllSynthBtn.addEventListener('click', () => {
+        playAllSynthBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
             activeLoopElements.filter(item => item.isSynth).forEach(item => {
                 if(item.audio.paused) {
                     if (!item.sourceNode && audioCtx) {
@@ -900,9 +908,9 @@
             logAction('Stopped all synth loops');
         });
 
-        playAllMicBtn.addEventListener('click', () => {
+        playAllMicBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
             activeLoopElements.filter(item => !item.isSynth).forEach(item => {
                 if(item.audio.paused) {
                     if (!item.sourceNode && audioCtx) {
@@ -929,7 +937,7 @@
         });
 
         masterVolume.addEventListener('input', (e) => {
-            if (masterGain) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
+            if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
         });
 
         savePresetBtn.addEventListener('click', async () => {
@@ -969,7 +977,7 @@
                     recordState('Load Session File');
                     if (!isAudioInit) initAudioContext();
                     masterVolume.value = data.volume || 0.5;
-                    if (masterGain) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
+                    if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
 
                     tones.forEach(t => t.stop());
                     tones = [];
@@ -1108,8 +1116,8 @@
 
                 this.btn = document.createElement('button');
                 this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                this.btn.addEventListener('click', () => {
-                    if(this.isPlaying) this.stop(); else this.start();
+                this.btn.addEventListener('click', async () => {
+                    if(this.isPlaying) this.stop(); else await this.start();
                 });
 
                 this.del = document.createElement('button');
@@ -1155,9 +1163,12 @@
                 }
             }
 
-            start() {
+            async start() {
                 if(!isAudioInit) initAudioContext();
-                if(audioCtx.state === 'suspended') audioCtx.resume().then(() => updateMasterToggleUI());
+                if(audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                    updateMasterToggleUI();
+                }
                 this.stop();
 
                 this.osc = audioCtx.createOscillator();
@@ -1208,8 +1219,11 @@
         let isRecordingSynth = false;
         let synthRecorderNode = null;
 
-        recTakeBtn.addEventListener('click', () => {
+        recTakeBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
+            if(audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
             if(!synthRecorderNode) {
                 synthRecorderNode = audioCtx.createMediaStreamDestination();
                 synthBus.connect(synthRecorderNode);
@@ -1218,7 +1232,12 @@
 
             if(!isRecordingSynth) {
                 synthRecordedChunks = [];
-                synthMediaRecorder = new MediaRecorder(synthDestStream);
+                let options = { mimeType: 'audio/webm' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    options = {}; // Fallback to safe environment default format
+                }
+
+                synthMediaRecorder = new MediaRecorder(synthDestStream, options);
                 synthMediaRecorder.ondataavailable = e => synthRecordedChunks.push(e.data);
                 synthMediaRecorder.onstop = () => {
                     let blob = new Blob(synthRecordedChunks, { type: 'audio/webm' });
@@ -1243,12 +1262,18 @@
         let isRecordingMic = false;
         recMicTakeBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
+            if(audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
             if(!isRecordingMic) {
                 try {
                     let stream = micStream || await navigator.mediaDevices.getUserMedia({ audio: true });
                     micRecordedChunks = [];
-                    let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 320000 };
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { audioBitsPerSecond: 320000 };
+                    // Removed forced high bitrate parameter to avoid mobile hardware rejection crashes
+                    let options = { mimeType: 'audio/webm' };
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options = {};
+                    }
 
                     micMediaRecorder = new MediaRecorder(stream, options);
                     micMediaRecorder.ondataavailable = e => micRecordedChunks.push(e.data);
@@ -1367,7 +1392,10 @@
                 }
             });
 
-            playBtn.addEventListener('click', () => {
+            playBtn.addEventListener('click', async () => {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
                 if(audioEl.paused) { 
                     if (!loopItemRef.sourceNode && audioCtx) {
                         loopItemRef.sourceNode = audioCtx.createMediaElementSource(audioEl);
@@ -1443,6 +1471,9 @@
 
         micToggleBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
+            if(audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
             if(!isMicActive) {
                 try {
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
