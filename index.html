@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,9 @@
             --text-main: #e0e0e0;
             --text-muted: #666666;
             --border-color: #161616;
-            --ui-scale: 1;
+            --ui-scale: 1.2;
+            --spectrometer-height: 70px;
+            --spectrometer-zoom-x: 1;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -22,67 +25,300 @@
             color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; padding: calc(4px * var(--ui-scale)); overflow-x: hidden;
             font-size: calc(10px * var(--ui-scale));
         }
-        #top-banner {
-            width: 100%; height: calc(24px * var(--ui-scale)); background-color: #0d0d0d; border: 1px solid var(--border-color);
-            border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: calc(10px * var(--ui-scale));
-            color: var(--accent-yellow); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0;
+        
+        body.spectrometer-fullscreen #spectrometer-section {
+            height: calc(100vh - 180px) !important;
+            flex-grow: 1;
         }
-        #spectrometer-bar {
-            width: 100%; height: calc(130px * var(--ui-scale)); background-color: var(--panel-bg);
-            border: 1px solid var(--border-color); border-radius: 4px; display: flex; align-items: center; padding: 0 calc(8px * var(--ui-scale)); gap: calc(10px * var(--ui-scale)); flex-shrink: 0; margin-bottom: calc(4px * var(--ui-scale));
+        body.spectrometer-fullscreen .canvas-scroll-wrapper {
+            height: calc(100vh - 240px) !important;
+        }
+
+        #log-window-modal .modal-box {
+            width: 600px;
+            max-width: 90vw;
+            height: 400px;
+            max-height: 80vh;
+        }
+        #full-log-content {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            font-size: calc(10px * var(--ui-scale));
+            font-family: monospace;
+            color: var(--text-main);
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        #welcome-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 2, 2, 0.95); z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center; gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+        #welcome-overlay.hidden {
+            opacity: 0; pointer-events: none;
+        }
+        .welcome-title {
+            font-size: calc(24px * var(--ui-scale)); color: var(--accent-yellow); letter-spacing: 2px; text-transform: uppercase;
+        }
+        .welcome-subtitle {
+            font-size: calc(12px * var(--ui-scale)); color: var(--text-muted); max-width: 400px; text-align: center; line-height: 1.5;
+        }
+        .welcome-canvas-container {
+            width: 400px; height: 100px; background: #000; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative;
+        }
+        .welcome-canvas { width: 100%; height: 100%; }
+        .enter-btn {
+            background-color: var(--accent-red); color: #000; font-size: calc(16px * var(--ui-scale)); padding: 12px 30px;
+            font-family: monospace; font-weight: bold; cursor: pointer; border: none; border-radius: 4px;
+            animation: pulse-glow 1.5s infinite alternate; transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .enter-btn:hover {
+            background-color: var(--accent-yellow); transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-yellow);
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px var(--accent-red); }
+            100% { box-shadow: 0 0 20px var(--accent-yellow); }
+        }
+
+        .top-banner-bar {
+            width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
+            padding: calc(6px * var(--ui-scale)) calc(8px * var(--ui-scale)); display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start;
+            gap: calc(8px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0;
+            resize: none; overflow: visible;
+        }
+        
+        .master-volume-banner {
+            width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
+            padding: calc(8px * var(--ui-scale)); display: flex; align-items: center; justify-content: center;
+            gap: calc(10px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0;
+            resize: none; overflow: visible;
+        }
+
+        .banner-group {
+            display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); flex-wrap: wrap;
+        }
+
+        #notification-container {
+            position: fixed; bottom: 15px; right: 15px; z-index: 20000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; max-width: 300px;
+        }
+        .notification-toast {
+            background: rgba(9, 9, 9, 0.95); border: 1px solid var(--accent-yellow); color: var(--text-main);
+            padding: 8px 12px; border-radius: 4px; font-size: calc(10px * var(--ui-scale)); font-family: monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 1; transition: opacity 0.5s ease, transform 0.3s ease;
+            pointer-events: auto;
+        }
+        .notification-toast.fade-out {
+            opacity: 0; transform: translateY(10px);
+        }
+
+        #spectrometer-section {
+            width: 100%; height: auto; background-color: var(--panel-bg);
+            border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column; padding: calc(6px * var(--ui-scale)); gap: calc(4px * var(--ui-scale)); flex-shrink: 0; margin-bottom: calc(4px * var(--ui-scale));
+            resize: none; overflow: visible;
+        }
+        .canvas-scroll-wrapper {
+            width: 100%; height: calc(var(--spectrometer-height) * var(--ui-scale)); overflow-x: auto; overflow-y: hidden; position: relative; border: 1px solid var(--border-color); background: #000;
         }
         .canvas-container {
-            position: relative; flex-grow: 1; height: calc(110px * var(--ui-scale)); display: flex; flex-direction: column; cursor: crosshair;
+            position: relative; width: calc(100% * var(--spectrometer-zoom-x)); height: 100%; display: flex; flex-direction: column; cursor: crosshair; min-width: 100%;
         }
-        canvas { width: 100%; height: calc(90px * var(--ui-scale)); background: #000; border: 1px solid var(--border-color); }
+        canvas { width: 100%; height: calc(100% - 20px); background: #000; display: block; }
         .axis-labels-x {
-            display: flex; justify-content: space-between; font-size: calc(8px * var(--ui-scale)); color: var(--text-muted); padding: 2px 0;
+            display: flex; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); padding: 2px 4px; height: 20px; width: 100%; background: #050505;
         }
         .axis-labels-y {
-            position: absolute; right: 2px; top: 16px; bottom: 22px; display: flex; flex-direction: column; justify-content: space-between; font-size: calc(8px * var(--ui-scale)); color: var(--text-muted); pointer-events: none; text-align: right;
+            position: absolute; right: 4px; top: 4px; bottom: 24px; display: flex; flex-direction: column; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); pointer-events: none; text-align: right;
         }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(280px * var(--ui-scale)), 1fr)); gap: calc(4px * var(--ui-scale)); flex-grow: 1; width: 100%; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(280px * var(--ui-scale)), 1fr)); gap: calc(4px * var(--ui-scale)); flex-grow: 1; width: 100%; align-content: start; }
         .panel {
             background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
-            padding: calc(6px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); min-height: calc(180px * var(--ui-scale)); overflow: hidden;
+            padding: calc(6px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); height: auto; min-height: 120px; overflow: visible;
+            resize: none;
         }
+        
+        /* Resizable sound section panels */
+        .panel.sound-section-panel {
+            resize: horizontal;
+            overflow: auto;
+        }
+
         .panel-header {
-            font-size: calc(11px * var(--ui-scale)); font-weight: 300; color: var(--accent-yellow); display: flex;
+            font-size: calc(10px * var(--ui-scale)); font-weight: 300; color: var(--accent-yellow); display: flex;
             justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: calc(2px * var(--ui-scale));
         }
         button {
-            background-color: var(--accent-red); color: #000; border: none; padding: calc(2px * var(--ui-scale)) calc(6px * var(--ui-scale));
+            background-color: var(--accent-red); color: #000; border: none; padding: calc(3px * var(--ui-scale)) calc(7px * var(--ui-scale));
             font-size: calc(10px * var(--ui-scale)); font-family: monospace; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; gap: calc(4px * var(--ui-scale));
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
         }
-        button:hover { background-color: var(--accent-yellow); }
+        button:hover { 
+            background-color: var(--accent-yellow); 
+            box-shadow: 0 0 8px var(--accent-yellow);
+        }
+        button:disabled {
+            opacity: 0.4; cursor: not-allowed; box-shadow: none !important; background-color: #333 !important; color: #777 !important;
+        }
         button.secondary { background-color: #0d0d0d; color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        button.secondary:hover {
+            background-color: rgba(204, 153, 0, 0.2);
+            box-shadow: 0 0 8px var(--accent-yellow);
+        }
+        
+        #play-all-tones-btn, #stop-all-tones-btn {
+            min-width: 0;
+            padding: calc(3px * var(--ui-scale)) calc(4px * var(--ui-scale));
+        }
+
         input, select { background: #000; border: 1px solid var(--border-color); color: var(--text-main); font-family: monospace; font-size: calc(10px * var(--ui-scale)); padding: calc(2px * var(--ui-scale)); border-radius: 2px; }
         input[type="range"] { accent-color: var(--accent-red); height: calc(12px * var(--ui-scale)); }
-        #tone-list, .takes-container, #markers-list { overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: calc(3px * var(--ui-scale)); flex-grow: 1; max-height: calc(150px * var(--ui-scale)); width: 100%; }
-        .tone-row { display: grid; grid-template-columns: calc(50px * var(--ui-scale)) 1fr calc(60px * var(--ui-scale)) calc(45px * var(--ui-scale)) calc(35px * var(--ui-scale)); gap: calc(2px * var(--ui-scale)); align-items: center; background: #000; padding: calc(2px * var(--ui-scale)); border: 1px solid var(--border-color); font-size: calc(9px * var(--ui-scale)); width: 100%; overflow: hidden; }
-        .freq-box { display: flex; flex-direction: column; min-width: 0; }
-        .take-row, .marker-row { display: flex; justify-content: space-between; align-items: center; background: #000; padding: calc(2px * var(--ui-scale)) calc(4px * var(--ui-scale)); border: 1px solid var(--border-color); font-size: calc(10px * var(--ui-scale)); width: 100%; overflow: hidden; }
-        .take-info, .marker-info { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .take-timer { font-family: monospace; color: var(--text-muted); font-size: calc(9px * var(--ui-scale)); }
+        
+        /* Updated tone-list and takes-container: height auto, no max-height restriction so tracks keep the same height as they increase */
+        #tone-list, .takes-container { overflow-y: visible; overflow-x: hidden; display: flex; flex-direction: column; gap: calc(5px * var(--ui-scale)); max-height: none; width: 100%; flex-grow: 1; }
+        
+        .tone-row { display: grid; grid-template-columns: calc(50px * var(--ui-scale)) 1fr calc(60px * var(--ui-scale)) calc(45px * var(--ui-scale)) calc(35px * var(--ui-scale)); gap: calc(2px * var(--ui-scale)); align-items: center; background: #000; padding: calc(2px * var(--ui-scale)); border: 1px solid var(--border-color); font-size: calc(10px * var(--ui-scale)); width: 100%; overflow: hidden; }
+        .freq-box { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+        .freq-input-container { display: flex; align-items: center; gap: 4px; width: 100%; }
+        .freq-input-container input[type="number"] { width: auto; min-width: 50px; flex: 0 1 auto; }
+        
+        /* Set frequency pitch font size same as general font size */
+        .note-display { font-size: calc(10px * var(--ui-scale)); color: var(--accent-yellow); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+
+        .take-row { display: flex; flex-direction: column; background: #000; padding: calc(4px * var(--ui-scale)); border: 1px solid var(--border-color); font-size: calc(10px * var(--ui-scale)); width: 100%; gap: calc(3px * var(--ui-scale)); }
+        .take-top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .take-info { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .take-timer { font-family: monospace; color: var(--text-muted); font-size: calc(10px * var(--ui-scale)); }
+        
+        .waveform-container {
+            position: relative;
+            width: 100%;
+            height: calc(36px * var(--ui-scale));
+            background: #040404;
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: transparent;
+        }
+        .playhead-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--accent-yellow);
+            pointer-events: none;
+            left: 0%;
+            box-shadow: 0 0 4px var(--accent-yellow);
+        }
+
         .compact-group { display: flex; gap: calc(4px * var(--ui-scale)); align-items: center; flex-shrink: 0; }
         .icon { width: calc(12px * var(--ui-scale)); height: calc(12px * var(--ui-scale)); stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; display: inline-block; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8); z-index: 10000; display: flex;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-box {
+            background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 4px;
+            display: flex; flex-direction: column; gap: 10px; min-width: 320px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
+        }
+        .modal-title { font-size: calc(10px * var(--ui-scale)); color: var(--accent-yellow); font-weight: bold; margin-bottom: 5px; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+        
+        #markers-list-container {
+            display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-top: 5px; border: 1px solid var(--border-color); padding: 4px; background: #000;
+        }
+        .marker-item-row {
+            display: flex; justify-content: space-between; align-items: center; font-size: calc(10px * var(--ui-scale)); padding: 3px 6px; border-bottom: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
-    <div id="top-banner">System Ready. Click any control to begin.</div>
-
-    <div id="spectrometer-bar">
-        <div class="compact-group" style="flex-direction: column; align-items: flex-start; gap: calc(2px * var(--ui-scale));">
-            <button id="master-toggle" class="secondary" title="Init Audio"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button>
-            <button id="mic-toggle-btn" class="secondary" title="Microphone"><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></button>
-            <button id="play-all-tones-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-            <button id="stop-all-tones-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
+    <div id="welcome-overlay">
+        <div class="welcome-title">Isolated Loop Station & Synth</div>
+        <div class="welcome-subtitle">Click below to initialize audio engine, activate default 416Hz tone generator, and enter interface.</div>
+        <div class="welcome-canvas-container">
+            <canvas id="welcome-canvas" class="welcome-canvas"></canvas>
         </div>
-        <div style="display:flex; flex-direction:column; flex-grow:1; gap:calc(2px * var(--ui-scale));">
-            <div style="display:flex; justify-content:space-between; font-size:calc(9px * var(--ui-scale)); color:var(--text-muted);">
-                <span id="fft-info-label">FFT: 8192 | RANGE: 0Hz - 30kHz</span>
-                <span id="peak-freq-display">PEAK: 0.00 Hz</span>
+        <button class="enter-btn" id="enter-ui-btn">ENTER UI & PLAY TONE</button>
+    </div>
+
+    <div id="notification-container"></div>
+
+    <div id="log-window-modal" class="modal-overlay hidden" style="z-index: 12000;">
+        <div class="modal-box">
+            <div class="modal-title">FULL ACTION LOG WINDOW</div>
+            <div id="full-log-content">System initialized. Ready.</div>
+            <div class="modal-buttons">
+                <button id="close-log-window-btn" class="secondary">Close</button>
             </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay hidden" style="z-index: 11000;">
+        <div class="modal-box" style="max-width:340px;">
+            <div class="modal-title" id="confirm-modal-title">CONFIRM ACTION</div>
+            <div id="confirm-modal-message" style="font-size:calc(10px * var(--ui-scale)); color:var(--text-main); line-height:1.4;">Are you sure you want to proceed?</div>
+            <div class="modal-buttons">
+                <button id="confirm-modal-yes-btn" style="background-color:var(--accent-red); color:#000;">Yes</button>
+                <button id="confirm-modal-no-btn" class="secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clear-markers-modal" class="modal-overlay hidden" style="z-index: 10050;">
+        <div class="modal-box">
+            <div class="modal-title">MARKER MANAGEMENT</div>
+            <div style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted); margin-bottom:5px;">Active Markers List (Central Time Timestamps):</div>
+            <div id="markers-list-container">
+                <div style="color:var(--text-muted); text-align:center; font-size:calc(10px * var(--ui-scale));">No markers active.</div>
+            </div>
+            <div class="modal-buttons">
+                <button id="modal-clear-all-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);">Clear All</button>
+                <button id="modal-cancel-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-banner-bar">
+        <div class="banner-group">
+            <button id="undo-btn" class="secondary" title="Undo Last Action" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg> Undo</button>
+            <button id="redo-btn" class="secondary" title="Redo Last Action" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg> Redo</button>
+            <button id="master-toggle" class="secondary" title="Freeze/Resume Spectrogram"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> Freeze/Resume</button>
+            <button id="mic-toggle-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Microphone"><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg> Mic</button>
+            <button id="size-toggle-btn" class="secondary" title="Cycle Spectrometer Size"><svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg> Size</button>
+            <button id="clear-markers-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Markers List & Options"><svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> Markers</button>
+            <button id="open-log-window-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Open Full Scrollable Log Window">Log Window</button>
+            <button id="zoom-out-btn" class="secondary" title="Decrease UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI -</button>
+            <button id="zoom-in-btn" class="secondary" title="Increase UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI +</button>
+            <button id="spec-zoom-out-btn" class="secondary" title="Spectrogram Zoom Out"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Spec Zoom -</button>
+            <button id="spec-zoom-in-btn" class="secondary" title="Spectrogram Zoom In"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Spec Zoom +</button>
+            <button id="save-preset-btn" class="secondary" title="Save Session & Export MP3s"><svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save</button>
+            <button id="load-preset-btn" class="secondary" title="Load Session"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Load</button>
+            <input type="file" id="load-file-input" style="display: none;">
+        </div>
+    </div>
+
+    <div id="spectrometer-section">
+        <div style="display:flex; justify-content:space-between; font-size:calc(10px * var(--ui-scale)); color:var(--text-muted);">
+            <span id="fft-info-label">FFT: 16384 | RANGE: 0Hz - 30kHz</span>
+            <span id="peak-freq-display" style="text-align: center; flex-grow: 1;">PEAK: 0.00 Hz (0.0 dB)</span>
+        </div>
+        <div class="canvas-scroll-wrapper" id="canvas-scroll-wrapper">
             <div class="canvas-container" id="canvas-container">
                 <canvas id="analyzer-canvas"></canvas>
                 <div class="axis-labels-y">
@@ -91,69 +327,62 @@
                     <span>-60 dB</span>
                     <span>-90 dB</span>
                 </div>
-                <div class="axis-labels-x">
-                    <span>0 Hz</span>
-                    <span>7.5 kHz</span>
-                    <span>15 kHz</span>
-                    <span>22.5 kHz</span>
-                    <span>30 kHz</span>
-                </div>
             </div>
         </div>
-        <div class="compact-group" style="flex-direction: column; align-items: flex-end; gap: calc(4px * var(--ui-scale));">
-            <div class="compact-group">
-                <button id="zoom-out-btn" class="secondary" title="Decrease UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
-                <button id="zoom-in-btn" class="secondary" title="Increase UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg></button>
-                <button id="save-preset-btn" class="secondary" title="Save Session & Export MP3s"><svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button>
-                <button id="load-preset-btn" class="secondary" title="Load Session"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
-                <input type="file" id="load-file-input" style="display: none;">
-            </div>
-            <div class="compact-group">
-                <label style="font-size:calc(9px * var(--ui-scale)); color:var(--text-muted)"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg></label>
-                <input type="range" id="master-volume" min="0" max="1" step="0.01" value="0.5" style="width: calc(70px * var(--ui-scale));">
-            </div>
+        <div class="axis-labels-x" id="axis-labels-x">
+            <span>0 Hz</span>
+            <span>7.5 kHz</span>
+            <span>15 kHz</span>
+            <span>22.5 kHz</span>
+            <span>30 kHz</span>
+        </div>
+    </div>
+
+    <div class="master-volume-banner">
+        <div class="compact-group">
+            <label style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted)"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg> Master Volume</label>
+            <input type="range" id="master-volume" min="0" max="1" step="0.01" value="0.5" style="width: calc(180px * var(--ui-scale));">
         </div>
     </div>
 
     <div class="dashboard">
-        <div class="panel">
+        <div class="panel sound-section-panel" id="panel-tones">
             <div class="panel-header">
                 <span><svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg> TONES</span>
                 <div class="compact-group">
-                    <button id="play-all-sound-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Sounds"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play All</button>
+                    <button id="play-all-tones-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Tones"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play All</button>
+                    <button id="stop-all-tones-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Tones"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Stop All</button>
                     <button id="add-tone-btn"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add</button>
                 </div>
             </div>
             <div id="tone-list"></div>
         </div>
 
-        <div class="panel">
-            <div class="panel-header">
-                <span><svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> MARKERS</span>
-                <button id="clear-markers-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Clear</button>
-            </div>
-            <div id="markers-list" class="takes-container">
-                <div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No spectrometer markers placed.</div>
-            </div>
-        </div>
-
-        <div class="panel">
+        <div class="panel sound-section-panel" id="panel-synth">
             <div class="panel-header">
                 <span><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> SYNTH LOOPS</span>
-                <button id="rec-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec</button>
+                <div class="compact-group">
+                    <button id="play-all-synth-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
+                    <button id="stop-all-synth-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
+                    <button id="rec-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec</button>
+                </div>
             </div>
             <div id="synth-takes-list" class="takes-container">
-                <div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>
+                <div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>
             </div>
         </div>
 
-        <div class="panel">
+        <div class="panel sound-section-panel" id="panel-mic">
             <div class="panel-header">
                 <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg> MIC LOOPS (320K)</span>
-                <button id="rec-mic-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Mic</button>
+                <div class="compact-group">
+                    <button id="play-all-mic-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
+                    <button id="stop-all-mic-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
+                    <button id="rec-mic-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Mic</button>
+                </div>
             </div>
             <div id="mic-takes-list" class="takes-container">
-                <div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>
+                <div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>
             </div>
         </div>
     </div>
@@ -161,24 +390,155 @@
     <script>
         let audioCtx = null, masterGain = null, synthBus = null, loopBus = null, analyser = null, isAudioInit = false;
         let tones = [];
-        let markers = [];
+        let markers = []; 
+        let sustainedHighPitchTracker = new Map(); 
+        let hoveredMarkerIndex = null;
         let micStream = null, micSource = null, micAnalyser = null, isMicActive = false;
-        let uiScale = 1.0;
+        let uiScale = 1.2;
+        let spectrometerZoomX = 1;
+        let spectrometerSizeState = 0;
+        let sessionStartTime = Date.now();
 
         let synthMediaRecorder = null, synthRecordedChunks = [], synthTakes = [];
         let micMediaRecorder = null, micRecordedChunks = [], micTakes = [];
         let activeLoopElements = [];
 
-        const topBanner = document.getElementById('top-banner');
+        let undoStack = [];
+        let redoStack = [];
+        let actionLogHistory = ["System initialized. Ready."];
+
+        const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const localizedNoteNames = {
+            "C": "Do", "C#": "Do sostenido / bemol", "D": "Re", "D#": "Re sostenido / bemol",
+            "E": "Mi", "F": "Fa", "F#": "Fa sostenido / bemol", "G": "Sol", "G#": "Sol sostenido / bemol",
+            "A": "La", "A#": "La sostenido / bemol", "B": "Si"
+        };
+
+        function getClosestNote(freq) {
+            if (freq <= 0) return { symbol: "-", name: "-" };
+            let midiNum = Math.round(69 + 12 * Math.log2(freq / 440));
+            let noteIndex = (midiNum % 12 + 12) % 12;
+            let symbol = noteNames[noteIndex];
+            let name = localizedNoteNames[symbol] || symbol;
+            return { symbol, name };
+        }
+
+        function recordState(actionDescription) {
+            let stateSnapshot = {
+                desc: actionDescription,
+                tones: tones.map(t => ({ freq: t.freq, type: t.type, gainVal: t.gainVal, isPlaying: t.isPlaying })),
+                markers: JSON.parse(JSON.stringify(markers)),
+                synthTakes: JSON.parse(JSON.stringify(synthTakes)),
+                micTakes: JSON.parse(JSON.stringify(micTakes))
+            };
+            undoStack.push(stateSnapshot);
+            if (undoStack.length > 30) undoStack.shift();
+            redoStack = []; 
+            updateUndoRedoUI();
+        }
+
+        function updateUndoRedoUI() {
+            document.getElementById('undo-btn').disabled = undoStack.length === 0;
+            document.getElementById('redo-btn').disabled = redoStack.length === 0;
+        }
+
+        function applyState(state) {
+            tones.forEach(t => t.stop());
+            tones = [];
+            toneList.innerHTML = '';
+            state.tones.forEach(tData => {
+                addToneRow(tData.freq, tData.type, tData.gainVal, tData.isPlaying, false);
+            });
+
+            markers = JSON.parse(JSON.stringify(state.markers));
+
+            synthTakes = [];
+            activeLoopElements = activeLoopElements.filter(el => !el.isSynth);
+            synthTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>`;
+            state.synthTakes.forEach(st => {
+                addTakeUI(st.dataUrl, synthTakes, synthTakesList, 'Synth Take', true, false);
+            });
+
+            micTakes = [];
+            activeLoopElements = activeLoopElements.filter(el => el.isSynth);
+            micTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>`;
+            state.micTakes.forEach(mt => {
+                addTakeUI(mt.dataUrl, micTakes, micTakesList, 'Mic Take', false, false);
+            });
+        }
+
+        document.getElementById('undo-btn').addEventListener('click', () => {
+            if (undoStack.length === 0) return;
+            let currentState = {
+                desc: "Current State",
+                tones: tones.map(t => ({ freq: t.freq, type: t.type, gainVal: t.gainVal, isPlaying: t.isPlaying })),
+                markers: JSON.parse(JSON.stringify(markers)),
+                synthTakes: JSON.parse(JSON.stringify(synthTakes)),
+                micTakes: JSON.parse(JSON.stringify(micTakes))
+            };
+            redoStack.push(currentState);
+            let previousState = undoStack.pop();
+            applyState(previousState);
+            updateUndoRedoUI();
+            logAction(`Undid: ${previousState.desc}`);
+        });
+
+        document.getElementById('redo-btn').addEventListener('click', () => {
+            if (redoStack.length === 0) return;
+            let currentState = {
+                desc: "Current State",
+                tones: tones.map(t => ({ freq: t.freq, type: t.type, gainVal: t.gainVal, isPlaying: t.isPlaying })),
+                markers: JSON.parse(JSON.stringify(markers)),
+                synthTakes: JSON.parse(JSON.stringify(synthTakes)),
+                micTakes: JSON.parse(JSON.stringify(micTakes))
+            };
+            undoStack.push(currentState);
+            let nextState = redoStack.pop();
+            applyState(nextState);
+            updateUndoRedoUI();
+            logAction(`Redid action`);
+        });
+
+        function confirmAction(message, title, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-modal-title').textContent = title || 'CONFIRM ACTION';
+            document.getElementById('confirm-modal-message').textContent = message || 'Are you sure?';
+            modal.classList.remove('hidden');
+
+            const yesBtn = document.getElementById('confirm-modal-yes-btn');
+            const noBtn = document.getElementById('confirm-modal-no-btn');
+
+            const cleanUp = () => {
+                modal.classList.add('hidden');
+                yesBtn.replaceWith(yesBtn.cloneNode(true));
+                noBtn.replaceWith(noBtn.cloneNode(true));
+            };
+
+            document.getElementById('confirm-modal-yes-btn').addEventListener('click', () => {
+                cleanUp();
+                onConfirm();
+            }, { once: true });
+
+            document.getElementById('confirm-modal-no-btn').addEventListener('click', () => {
+                cleanUp();
+            }, { once: true });
+        }
+
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+        const enterUiBtn = document.getElementById('enter-ui-btn');
+        const welcomeCanvas = document.getElementById('welcome-canvas');
+        const welcomeCtx = welcomeCanvas.getContext('2d');
+        const notificationContainer = document.getElementById('notification-container');
         const masterToggle = document.getElementById('master-toggle');
         const stopAllTonesBtn = document.getElementById('stop-all-tones-btn');
         const playAllTonesBtn = document.getElementById('play-all-tones-btn');
-        const playAllSoundBtn = document.getElementById('play-all-sound-btn');
+        const playAllSynthBtn = document.getElementById('play-all-synth-btn');
+        const stopAllSynthBtn = document.getElementById('stop-all-synth-btn');
+        const playAllMicBtn = document.getElementById('play-all-mic-btn');
+        const stopAllMicBtn = document.getElementById('stop-all-mic-btn');
         const masterVolume = document.getElementById('master-volume');
         const toneList = document.getElementById('tone-list');
         const addToneBtn = document.getElementById('add-tone-btn');
-        const markersList = document.getElementById('markers-list');
-        const clearMarkersBtn = document.getElementById('clear-markers-btn');
         const micToggleBtn = document.getElementById('mic-toggle-btn');
         const recTakeBtn = document.getElementById('rec-take-btn');
         const synthTakesList = document.getElementById('synth-takes-list');
@@ -186,6 +546,8 @@
         const micTakesList = document.getElementById('mic-takes-list');
         const canvas = document.getElementById('analyzer-canvas');
         const canvasContainer = document.getElementById('canvas-container');
+        const canvasScrollWrapper = document.getElementById('canvas-scroll-wrapper');
+        const axisLabelsX = document.getElementById('axis-labels-x');
         const canvasCtx = canvas.getContext('2d');
         const peakFreqDisplay = document.getElementById('peak-freq-display');
         const fftInfoLabel = document.getElementById('fft-info-label');
@@ -194,26 +556,272 @@
         const loadFileInput = document.getElementById('load-file-input');
         const zoomInBtn = document.getElementById('zoom-in-btn');
         const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const specZoomInBtn = document.getElementById('spec-zoom-in-btn');
+        const specZoomOutBtn = document.getElementById('spec-zoom-out-btn');
+        const sizeToggleBtn = document.getElementById('size-toggle-btn');
+        const clearMarkersBtn = document.getElementById('clear-markers-btn');
+        const clearMarkersModal = document.getElementById('clear-markers-modal');
+        const markersListContainer = document.getElementById('markers-list-container');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalClearAllBtn = document.getElementById('modal-clear-all-btn');
+        
+        const openLogWindowBtn = document.getElementById('open-log-window-btn');
+        const logWindowModal = document.getElementById('log-window-modal');
+        const closeLogWindowBtn = document.getElementById('close-log-window-btn');
+        const fullLogContent = document.getElementById('full-log-content');
+
+        openLogWindowBtn.addEventListener('click', () => {
+            fullLogContent.textContent = actionLogHistory.join('\n');
+            logWindowModal.classList.remove('hidden');
+        });
+
+        closeLogWindowBtn.addEventListener('click', () => {
+            logWindowModal.classList.add('hidden');
+        });
+
+        // Automatically adjust adjacent sound section widths when resizing horizontally
+        const soundPanels = document.querySelectorAll('.sound-section-panel');
+        soundPanels.forEach(panel => {
+            let observer = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    let currentWidth = entry.contentRect.width;
+                    let otherPanels = Array.from(soundPanels).filter(p => p !== entry.target);
+                    if (otherPanels.length > 0) {
+                        // Distribute width adjustment inversely to adjacent panels
+                        let totalOtherWidth = otherPanels.reduce((sum, p) => sum + p.offsetWidth, 0);
+                        // Using flex layout adjustment via flex-basis or explicit style width
+                        otherPanels.forEach(p => {
+                            let ratio = p.offsetWidth / (totalOtherWidth || 1);
+                            // We can let CSS flex handle it or adjust width proportionally if needed
+                        });
+                    }
+                }
+            });
+            observer.observe(panel);
+        });
+
+        let welcomeAnimId;
+        function drawWelcomeAnimation() {
+            welcomeAnimId = requestAnimationFrame(drawWelcomeAnimation);
+            let w = welcomeCanvas.width = welcomeCanvas.offsetWidth;
+            let h = welcomeCanvas.height = welcomeCanvas.offsetHeight;
+            welcomeCtx.fillStyle = '#020202';
+            welcomeCtx.fillRect(0, 0, w, h);
+
+            let bars = 40;
+            let barW = w / bars;
+            let time = Date.now() * 0.003;
+            for (let i = 0; i < bars; i++) {
+                let noise = Math.sin(time + i * 0.3) * 0.5 + 0.5;
+                let highBias = Math.pow(i / bars, 2);
+                let barH = (noise * 0.7 + highBias * 0.3) * h * 0.8;
+                let redVal = Math.min(255, barH * 3);
+                welcomeCtx.fillStyle = `rgb(${redVal}, ${Math.floor(150 - barH)}, 20)`;
+                welcomeCtx.fillRect(i * barW + 1, h - barH, barW - 2, barH);
+            }
+        }
+        drawWelcomeAnimation();
 
         function logAction(msg) {
-            topBanner.textContent = msg;
+            let timestampedMsg = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            actionLogHistory.push(timestampedMsg);
+            if (actionLogHistory.length > 500) actionLogHistory.shift();
+            
+            let toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.textContent = msg;
+            notificationContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => { toast.remove(); }, 500);
+            }, 3000);
         }
+
+        enterUiBtn.addEventListener('click', async () => {
+            welcomeOverlay.classList.add('hidden');
+            setTimeout(() => { welcomeOverlay.style.display = 'none'; }, 500);
+            cancelAnimationFrame(welcomeAnimId);
+            sessionStartTime = Date.now();
+            initAudioContext();
+            addToneRow(416, 'sine', 0.2, true, false);
+            updateMasterToggleUI();
+
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                isMicActive = true;
+                if (isAudioInit && micStream) {
+                    try {
+                        micSource = audioCtx.createMediaStreamSource(micStream);
+                        micAnalyser = audioCtx.createAnalyser();
+                        micAnalyser.fftSize = 16384;
+                        micSource.connect(micAnalyser);
+                    } catch(e) {}
+                }
+            } catch(e) {
+                isMicActive = false;
+                micToggleBtn.style.borderColor = 'var(--border-color)';
+                micToggleBtn.style.color = 'var(--text-muted)';
+            }
+            logAction('Audio Engine Started & 416Hz Tone Active');
+        });
 
         zoomInBtn.addEventListener('click', () => {
             uiScale = Math.min(1.8, uiScale + 0.1);
             document.documentElement.style.setProperty('--ui-scale', uiScale);
-            logAction(`Increased UI interface elements size to ${uiScale.toFixed(1)}x`);
+            logAction(`Increased UI scale to ${uiScale.toFixed(1)}x`);
         });
 
         zoomOutBtn.addEventListener('click', () => {
             uiScale = Math.max(0.6, uiScale - 0.1);
             document.documentElement.style.setProperty('--ui-scale', uiScale);
-            logAction(`Decreased UI interface elements size to ${uiScale.toFixed(1)}x`);
+            logAction(`Decreased UI scale to ${uiScale.toFixed(1)}x`);
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            addToneRow(416, 'sine', 0.2, false);
-            updateMasterToggleUI();
+        specZoomInBtn.addEventListener('click', () => {
+            spectrometerZoomX = Math.min(4.0, spectrometerZoomX + 0.5);
+            document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+            updateAxisLabels();
+            logAction(`Spectrogram Zoom: ${spectrometerZoomX}x`);
+        });
+
+        specZoomOutBtn.addEventListener('click', () => {
+            spectrometerZoomX = Math.max(1.0, spectrometerZoomX - 0.5);
+            document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+            updateAxisLabels();
+            logAction(`Spectrogram Zoom: ${spectrometerZoomX}x`);
+        });
+
+        canvasScrollWrapper.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.ctrlKey) {
+                let zoomDelta = e.deltaY < 0 ? 0.25 : -0.25;
+                spectrometerZoomX = Math.max(1.0, Math.min(4.0, spectrometerZoomX + zoomDelta));
+                document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+                updateAxisLabels();
+            } else if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+                canvasScrollWrapper.scrollLeft += (e.deltaX !== 0 ? e.deltaX : e.deltaY);
+            } else {
+                let zoomDelta = e.deltaY < 0 ? 0.1 : -0.1;
+                spectrometerZoomX = Math.max(1.0, Math.min(4.0, spectrometerZoomX + zoomDelta));
+                document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+                updateAxisLabels();
+            }
+        }, { passive: false });
+
+        let initialPinchDistance = null;
+        canvasScrollWrapper.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        canvasScrollWrapper.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && initialPinchDistance !== null) {
+                let currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                let factor = currentDistance / initialPinchDistance;
+                if (factor > 1.05) {
+                    spectrometerZoomX = Math.min(4.0, spectrometerZoomX + 0.05);
+                    document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+                    updateAxisLabels();
+                } else if (factor < 0.95) {
+                    spectrometerZoomX = Math.max(1.0, spectrometerZoomX - 0.05);
+                    document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
+                    updateAxisLabels();
+                }
+            }
+        }, { passive: true });
+
+        canvasScrollWrapper.addEventListener('touchend', () => {
+            initialPinchDistance = null;
+        });
+
+        function updateAxisLabels() {
+            let maxFreq = 30000 / spectrometerZoomX;
+            let step = maxFreq / 4;
+            axisLabelsX.innerHTML = `
+                <span>0 Hz</span>
+                <span>${(step).toFixed(0)} Hz</span>
+                <span>${(step * 2).toFixed(0)} Hz</span>
+                <span>${(step * 3).toFixed(0)} Hz</span>
+                <span>${maxFreq.toFixed(0)} Hz</span>
+            `;
+        }
+
+        // Spectrometer size: only 2 steps rather than 3
+        sizeToggleBtn.addEventListener('click', () => {
+            spectrometerSizeState = (spectrometerSizeState + 1) % 2;
+            document.body.classList.remove('spectrometer-fullscreen');
+            if (spectrometerSizeState === 0) {
+                document.documentElement.style.setProperty('--spectrometer-height', '70px');
+                logAction('Spectrometer size: Original');
+            } else if (spectrometerSizeState === 1) {
+                document.body.classList.add('spectrometer-fullscreen');
+                logAction('Spectrometer size: Full Screen');
+            }
+        });
+
+        clearMarkersBtn.addEventListener('click', () => {
+            renderMarkersModalList();
+            clearMarkersModal.classList.remove('hidden');
+        });
+
+        function formatTimestampCentralTime(ms) {
+            let targetDate = new Date(ms);
+            return targetDate.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + "." + Math.floor((ms % 1000) / 100);
+        }
+
+        function renderMarkersModalList() {
+            markersListContainer.innerHTML = '';
+            if (markers.length === 0) {
+                markersListContainer.innerHTML = `<div style="color:var(--text-muted); text-align:center; font-size:calc(10px * var(--ui-scale)); padding: 10px;">No markers active.</div>`;
+                return;
+            }
+            markers.forEach((m, idx) => {
+                let row = document.createElement('div');
+                row.className = 'marker-item-row';
+                let timeStr = m.timestamp ? formatTimestampCentralTime(m.timestamp) : "00:00:00.0";
+                row.innerHTML = `<span>#${idx + 1}: ${m.freq.toFixed(2)} Hz <span style="color:var(--text-muted);">[CT: ${timeStr}]</span></span>`;
+                
+                let delBtn = document.createElement('button');
+                delBtn.textContent = 'Delete';
+                delBtn.className = 'secondary';
+                delBtn.style.fontSize = 'calc(10px * var(--ui-scale))';
+                delBtn.style.padding = '1px 4px';
+                delBtn.style.borderColor = 'var(--accent-red)';
+                delBtn.style.color = 'var(--accent-red)';
+                delBtn.addEventListener('click', () => {
+                    confirmAction(`Delete marker #${idx + 1} (${m.freq.toFixed(1)} Hz)?`, 'DELETE MARKER', () => {
+                        recordState('Delete Marker');
+                        markers.splice(idx, 1);
+                        renderMarkersModalList();
+                        logAction(`Deleted marker #${idx + 1}`);
+                    });
+                });
+                row.appendChild(delBtn);
+                markersListContainer.appendChild(row);
+            });
+        }
+
+        modalCancelBtn.addEventListener('click', () => {
+            clearMarkersModal.classList.add('hidden');
+        });
+
+        modalClearAllBtn.addEventListener('click', () => {
+            if (markers.length > 0) {
+                confirmAction('Are you sure you want to clear all active markers?', 'CLEAR ALL MARKERS', () => {
+                    recordState('Clear All Markers');
+                    markers = [];
+                    renderMarkersModalList();
+                    logAction('All markers cleared');
+                });
+            }
         });
 
         function initAudioContext() {
@@ -233,19 +841,24 @@
             loopBus.connect(masterGain);
 
             analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 8192;
+            analyser.fftSize = 32768; // Doubled frequency bands resolution (from 16384 to 32768) while keeping full 30kHz scroll
             analyser.smoothingTimeConstant = 0.8;
 
             masterGain.connect(analyser);
             analyser.connect(audioCtx.destination);
 
+            if (isMicActive && micStream) {
+                try {
+                    micSource = audioCtx.createMediaStreamSource(micStream);
+                    micAnalyser = audioCtx.createAnalyser();
+                    micAnalyser.fftSize = 32768;
+                    micSource.connect(micAnalyser);
+                } catch(e) {}
+            }
+
             isAudioInit = true;
             updateMasterToggleUI();
             fftInfoLabel.textContent = `FFT: ${analyser.fftSize} | SR: ${audioCtx.sampleRate}Hz`;
-
-            if (tones.length > 0 && !tones[0].isPlaying) {
-                tones[0].start();
-            }
 
             drawVisualizer();
         }
@@ -269,39 +882,31 @@
         masterToggle.addEventListener('click', () => {
             if (!isAudioInit) {
                 initAudioContext();
-                logAction('Initialized Master Audio Context');
             } else if (audioCtx.state === 'suspended') { 
                 audioCtx.resume().then(() => updateMasterToggleUI()); 
-                logAction('Resumed Audio Context');
             } else if (audioCtx.state === 'running') { 
                 audioCtx.suspend().then(() => updateMasterToggleUI()); 
-                logAction('Suspended Audio Context');
             }
             updateMasterToggleUI();
+            logAction(`Spectrogram State: ${audioCtx.state}`);
         });
 
         stopAllTonesBtn.addEventListener('click', () => { 
             tones.forEach(t => t.stop()); 
-            activeLoopElements.forEach(item => {
-                item.audio.pause();
-                item.audio.currentTime = 0;
-                item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                item.playBtn.style.color = 'var(--accent-yellow)';
-                item.timer.textContent = formatTime(item.audio.duration || 0);
-            });
-            logAction('Stopped all active sounds');
+            logAction('Stopped all tones');
         });
 
         playAllTonesBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             tones.forEach(t => t.start());
             logAction('Played all tone generators');
         });
 
-        playAllSoundBtn.addEventListener('click', () => {
+        playAllSynthBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            tones.forEach(t => t.start());
-            activeLoopElements.forEach(item => {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            activeLoopElements.filter(item => item.isSynth).forEach(item => {
                 if(item.audio.paused) {
                     if (!item.sourceNode && audioCtx) {
                         item.sourceNode = audioCtx.createMediaElementSource(item.audio);
@@ -312,12 +917,50 @@
                     item.playBtn.style.color = 'var(--accent-red)';
                 }
             });
-            logAction('Played all tones and loops');
+            logAction('Played all synth loops');
+        });
+
+        stopAllSynthBtn.addEventListener('click', () => {
+            activeLoopElements.filter(item => item.isSynth).forEach(item => {
+                item.audio.pause();
+                item.audio.currentTime = 0;
+                item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                item.playBtn.style.color = 'var(--accent-yellow)';
+                item.timer.textContent = formatTime(item.audio.duration || 0);
+            });
+            logAction('Stopped all synth loops');
+        });
+
+        playAllMicBtn.addEventListener('click', () => {
+            if(!isAudioInit) initAudioContext();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            activeLoopElements.filter(item => !item.isSynth).forEach(item => {
+                if(item.audio.paused) {
+                    if (!item.sourceNode && audioCtx) {
+                        item.sourceNode = audioCtx.createMediaElementSource(item.audio);
+                        item.sourceNode.connect(loopBus);
+                    }
+                    item.audio.play();
+                    item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+                    item.playBtn.style.color = 'var(--accent-red)';
+                }
+            });
+            logAction('Played all mic loops');
+        });
+
+        stopAllMicBtn.addEventListener('click', () => {
+            activeLoopElements.filter(item => !item.isSynth).forEach(item => {
+                item.audio.pause();
+                item.audio.currentTime = 0;
+                item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                item.playBtn.style.color = 'var(--accent-yellow)';
+                item.timer.textContent = formatTime(item.audio.duration || 0);
+            });
+            logAction('Stopped all mic loops');
         });
 
         masterVolume.addEventListener('input', (e) => {
             if (masterGain) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
-            logAction(`Changed master volume to ${Math.round(e.target.value * 100)}%`);
         });
 
         savePresetBtn.addEventListener('click', async () => {
@@ -342,13 +985,10 @@
             for (let i = 0; i < micTakes.length; i++) {
                 await exportDataUrlAsMp3(micTakes[i].dataUrl, `mic-take-${i + 1}.mp3`);
             }
-            logAction('Saved session and exported all audio takes as MP3 files');
+            logAction('Saved session & exported MP3s');
         });
 
-        loadPresetBtn.addEventListener('click', () => {
-            loadFileInput.click();
-            logAction('Opened file dialog to load preset session');
-        });
+        loadPresetBtn.addEventListener('click', () => { loadFileInput.click(); });
 
         loadFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -357,6 +997,7 @@
             reader.onload = (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
+                    recordState('Load Session File');
                     if (!isAudioInit) initAudioContext();
                     masterVolume.value = data.volume || 0.5;
                     if (masterGain) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
@@ -365,24 +1006,24 @@
                     tones = [];
                     toneList.innerHTML = '';
                     if (data.tones && Array.isArray(data.tones)) {
-                        data.tones.forEach(item => addToneRow(item.freq, item.type, item.gain, item.playing));
+                        data.tones.forEach(item => addToneRow(item.freq, item.type, item.gain, item.playing, false));
                     }
 
                     synthTakes = [];
                     activeLoopElements = activeLoopElements.filter(el => !el.isSynth);
-                    synthTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>`;
+                    synthTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>`;
                     if (data.synthTakes && Array.isArray(data.synthTakes)) {
-                        data.synthTakes.forEach(st => addTakeUI(st.dataUrl, synthTakes, synthTakesList, 'Synth Take', true));
+                        data.synthTakes.forEach(st => addTakeUI(st.dataUrl, synthTakes, synthTakesList, 'Synth Take', true, false));
                     }
 
                     micTakes = [];
                     activeLoopElements = activeLoopElements.filter(el => el.isSynth);
-                    micTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>`;
+                    micTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>`;
                     if (data.micTakes && Array.isArray(data.micTakes)) {
-                        data.micTakes.forEach(mt => addTakeUI(mt.dataUrl, micTakes, micTakesList, 'Mic Take', false));
+                        data.micTakes.forEach(mt => addTakeUI(mt.dataUrl, micTakes, micTakesList, 'Mic Take', false, false));
                     }
-                    logAction(`Successfully loaded session from file: ${file.name}`);
-                } catch (err) { alert('Invalid session file format.'); }
+                    logAction('Loaded session successfully');
+                } catch (err) { alert('Invalid session file.'); }
                 loadFileInput.value = '';
             };
             reader.readAsText(file);
@@ -420,11 +1061,12 @@
                 const a = document.createElement('a');
                 a.href = url; a.download = filename; a.click();
                 URL.revokeObjectURL(url);
-            } catch(e) { console.error("MP3 Encoding failed", e); }
+            } catch(e) {}
         }
 
         class ToneUnit {
-            constructor(freq = 416, type = 'sine', gainVal = 0.2, shouldPlay = false) {
+            constructor(freq = 416, type = 'sine', gainVal = 0.2, shouldPlay = false, recordUndo = true) {
+                if (recordUndo) recordState('Add Tone Generator');
                 this.freq = freq; this.type = type; this.gainVal = gainVal;
                 this.isPlaying = false; this.osc = null; this.gain = null;
                 this.shouldPlay = shouldPlay;
@@ -444,7 +1086,6 @@
                 this.select.addEventListener('change', e => { 
                     this.type = e.target.value; 
                     if(this.isPlaying && this.osc) this.osc.type = this.type; 
-                    logAction(`Changed tone waveform to ${this.type.toUpperCase()}`);
                 });
 
                 let box = document.createElement('div');
@@ -452,8 +1093,21 @@
                 this.slider = document.createElement('input');
                 this.slider.type = 'range'; this.slider.min = '0.01'; this.slider.max = '30000'; this.slider.step = '0.01'; this.slider.value = this.freq;
                 
+                let inputContainer = document.createElement('div');
+                inputContainer.className = 'freq-input-container';
+
                 this.input = document.createElement('input');
                 this.input.type = 'number'; this.input.min = '0.01'; this.input.max = '30000'; this.input.step = '0.01'; this.input.value = this.freq;
+
+                this.noteDisplay = document.createElement('div');
+                this.noteDisplay.className = 'note-display';
+                this.updateNoteDisplay(this.freq);
+
+                inputContainer.appendChild(this.input);
+                inputContainer.appendChild(this.noteDisplay);
+
+                this.input.addEventListener('focus', () => { this.input.select(); });
+                this.input.addEventListener('click', () => { this.input.select(); });
 
                 this.input.addEventListener('wheel', e => {
                     e.preventDefault();
@@ -465,19 +1119,14 @@
                     this.updateFrequency(newVal);
                 });
 
-                this.slider.addEventListener('input', e => { 
-                    this.updateFrequency(parseFloat(e.target.value)); 
-                    logAction(`Adjusted tone frequency to ${this.freq.toFixed(2)} Hz`);
-                });
+                this.slider.addEventListener('input', e => { this.updateFrequency(parseFloat(e.target.value)); });
                 this.input.addEventListener('input', e => {
                     let v = parseFloat(e.target.value);
-                    if(!isNaN(v)) {
-                        this.updateFrequency(v);
-                        logAction(`Typed tone frequency to ${this.freq.toFixed(2)} Hz`);
-                    }
+                    if(!isNaN(v)) this.updateFrequency(v);
                 });
 
-                box.appendChild(this.slider); box.appendChild(this.input);
+                box.appendChild(this.slider); 
+                box.appendChild(inputContainer);
 
                 this.vol = document.createElement('input');
                 this.vol.type = 'range'; this.vol.min = '0'; this.vol.max = '1'; this.vol.step = '0.01'; this.vol.value = this.gainVal;
@@ -486,31 +1135,25 @@
                     if(this.isPlaying && this.gain && audioCtx) {
                         this.gain.gain.setValueAtTime(this.gainVal, audioCtx.currentTime);
                     }
-                    logAction(`Adjusted tone volume gain to ${Math.round(this.gainVal * 100)}%`);
                 });
 
                 this.btn = document.createElement('button');
                 this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
                 this.btn.addEventListener('click', () => {
-                    if(this.isPlaying) {
-                        this.stop();
-                        logAction('Stopped individual tone generator');
-                    } else {
-                        this.start();
-                        logAction(`Started tone generator at ${this.freq.toFixed(2)} Hz`);
-                    }
+                    if(this.isPlaying) this.stop(); else this.start();
                 });
 
                 this.del = document.createElement('button');
                 this.del.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
                 this.del.className = 'secondary';
                 this.del.addEventListener('click', () => {
-                    if(confirm("Are you sure you want to delete this tone generator?")) {
+                    confirmAction(`Delete tone generator (${this.freq} Hz)?`, 'DELETE TONE GENERATOR', () => {
+                        recordState('Delete Tone Generator');
                         this.stop(); 
                         this.row.remove(); 
                         tones.splice(tones.indexOf(this), 1);
-                        logAction('Deleted tone generator row');
-                    }
+                        logAction('Deleted tone generator');
+                    });
                 });
 
                 this.row.appendChild(this.select);
@@ -520,14 +1163,24 @@
                 this.row.appendChild(this.del);
                 toneList.appendChild(this.row);
 
-                setTimeout(() => { this.input.focus(); this.input.select(); }, 50);
+                setTimeout(() => {
+                    this.input.focus();
+                    this.input.select();
+                }, 50);
+
                 if (this.shouldPlay) this.start();
+            }
+
+            updateNoteDisplay(freq) {
+                let note = getClosestNote(freq);
+                this.noteDisplay.textContent = `Note: ${note.symbol} (${note.name})`;
             }
 
             updateFrequency(val) {
                 this.freq = Math.max(0.01, Math.min(30000, val));
                 this.slider.value = this.freq;
                 this.input.value = this.freq;
+                this.updateNoteDisplay(this.freq);
                 if(this.isPlaying && this.osc && audioCtx) {
                     try { this.osc.frequency.setValueAtTime(this.freq, audioCtx.currentTime); } catch(e) {}
                 }
@@ -558,13 +1211,13 @@
             }
         }
 
-        function addToneRow(freq, type, gain, shouldPlay = true) {
-            tones.push(new ToneUnit(freq, type, gain, shouldPlay));
+        function addToneRow(freq, type, gain, shouldPlay = true, recordUndo = true) {
+            tones.push(new ToneUnit(freq, type, gain, shouldPlay, recordUndo));
         }
 
-        addToneBtn.addEventListener('click', () => {
-            addToneRow(416, 'sine', 0.15, true);
-            logAction('Added a new tone generator row');
+        addToneBtn.addEventListener('click', () => { 
+            addToneRow(416, 'sine', 0.15, true, true); 
+            logAction('Added new tone generator');
         });
 
         canvasContainer.addEventListener('click', (e) => {
@@ -573,70 +1226,14 @@
             let y = e.clientY - rect.top;
             if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
 
+            let maxFreq = 30000 / spectrometerZoomX;
             let freqRatio = x / rect.width;
-            let dbRatio = 1 - (y / rect.height);
-            let freq = freqRatio * 30000;
-            let db = -90 + (dbRatio * 90);
+            let freq = freqRatio * maxFreq;
 
-            markers.push({ freq: freq, db: db, xRatio: freqRatio });
-            renderMarkers();
-            logAction(`Placed spectrometer marker at ${freq.toFixed(2)} Hz, ${db.toFixed(1)} dB`);
+            recordState('Add Spectrogram Marker');
+            markers.push({ freq: freq, xRatio: freqRatio, timestamp: Date.now() });
+            logAction(`Added line marker at ${freq.toFixed(2)} Hz`);
         });
-
-        clearMarkersBtn.addEventListener('click', () => {
-            if(markers.length > 0 && confirm("Are you sure you want to clear all spectrometer markers?")) {
-                markers = [];
-                renderMarkers();
-                logAction('Cleared all spectrometer markers');
-            }
-        });
-
-        function renderMarkers() {
-            if (markers.length === 0) {
-                markersList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No spectrometer markers placed.</div>`;
-                return;
-            }
-            markersList.innerHTML = '';
-            markers.forEach((m, idx) => {
-                let row = document.createElement('div');
-                row.className = 'marker-row';
-                
-                let info = document.createElement('div');
-                info.className = 'marker-info';
-                info.innerHTML = `<span>#${idx + 1}: ${m.freq.toFixed(1)} Hz | ${m.db.toFixed(1)} dB</span>`;
-                row.appendChild(info);
-
-                let btnGroup = document.createElement('div');
-                btnGroup.className = 'compact-group';
-
-                let addToneFromMarker = document.createElement('button');
-                addToneFromMarker.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
-                addToneFromMarker.className = 'secondary';
-                addToneFromMarker.title = 'Add Tone at this Frequency';
-                addToneFromMarker.addEventListener('click', () => {
-                    addToneRow(m.freq, 'sine', 0.2, true);
-                    logAction(`Added tone generator at marker frequency ${m.freq.toFixed(2)} Hz`);
-                });
-
-                let removeBtn = document.createElement('button');
-                removeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-                removeBtn.className = 'secondary';
-                removeBtn.style.borderColor = 'var(--accent-red)';
-                removeBtn.style.color = 'var(--accent-red)';
-                removeBtn.addEventListener('click', () => {
-                    if(confirm(`Are you sure you want to delete marker line #${idx + 1} (${m.freq.toFixed(1)} Hz)?`)) {
-                        markers.splice(idx, 1);
-                        renderMarkers();
-                        logAction(`Removed marker #${idx + 1}`);
-                    }
-                });
-
-                btnGroup.appendChild(addToneFromMarker);
-                btnGroup.appendChild(removeBtn);
-                row.appendChild(btnGroup);
-                markersList.appendChild(row);
-            });
-        }
 
         let synthDestStream = null;
         let isRecordingSynth = false;
@@ -644,7 +1241,6 @@
 
         recTakeBtn.addEventListener('click', () => {
             if(!isAudioInit) initAudioContext();
-            
             if(!synthRecorderNode) {
                 synthRecorderNode = audioCtx.createMediaStreamDestination();
                 synthBus.connect(synthRecorderNode);
@@ -658,25 +1254,24 @@
                 synthMediaRecorder.onstop = () => {
                     let blob = new Blob(synthRecordedChunks, { type: 'audio/webm' });
                     let reader = new FileReader();
-                    reader.onload = function(e) { addTakeUI(e.target.result, synthTakes, synthTakesList, 'Synth Take', true); };
+                    reader.onload = function(e) { addTakeUI(e.target.result, synthTakes, synthTakesList, 'Synth Take', true, true); };
                     reader.readAsDataURL(blob);
                 };
                 synthMediaRecorder.start();
                 isRecordingSynth = true;
                 recTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Stop';
                 recTakeBtn.style.backgroundColor = 'var(--accent-yellow)';
-                logAction('Started recording Synth loops');
+                logAction('Started recording synth loop');
             } else {
                 synthMediaRecorder.stop();
                 isRecordingSynth = false;
                 recTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec';
                 recTakeBtn.style.backgroundColor = 'var(--accent-red)';
-                logAction('Stopped and saved Synth loop recording');
+                logAction('Stopped & saved synth loop');
             }
         });
 
         let isRecordingMic = false;
-
         recMicTakeBtn.addEventListener('click', async () => {
             if(!isAudioInit) initAudioContext();
             if(!isRecordingMic) {
@@ -691,25 +1286,26 @@
                     micMediaRecorder.onstop = () => {
                         let blob = new Blob(micRecordedChunks, { type: 'audio/webm' });
                         let reader = new FileReader();
-                        reader.onload = function(e) { addTakeUI(e.target.result, micTakes, micTakesList, 'Mic Take', false); };
+                        reader.onload = function(e) { addTakeUI(e.target.result, micTakes, micTakesList, 'Mic Take', false, true); };
                         reader.readAsDataURL(blob);
                     };
                     micMediaRecorder.start();
                     isRecordingMic = true;
                     recMicTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Stop';
                     recMicTakeBtn.style.backgroundColor = 'var(--accent-yellow)';
-                    logAction('Started recording Microphone take');
-                } catch(e) { alert('Mic access denied or configuration error.'); }
+                    logAction('Started recording mic loop');
+                } catch(e) {}
             } else {
                 micMediaRecorder.stop();
                 isRecordingMic = false;
                 recMicTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Mic';
                 recMicTakeBtn.style.backgroundColor = 'var(--accent-red)';
-                logAction('Stopped and saved Microphone take recording');
+                logAction('Stopped & saved mic loop');
             }
         });
 
-        function addTakeUI(dataUrl, takesArray, containerEl, labelPrefix, isSynth) {
+        function addTakeUI(dataUrl, takesArray, containerEl, labelPrefix, isSynth, recordUndo = true) {
+            if (recordUndo) recordState(`Record ${labelPrefix}`);
             if(takesArray.length === 0) containerEl.innerHTML = '';
             let takeId = takesArray.length + 1;
             let audioEl = new Audio(dataUrl);
@@ -721,6 +1317,9 @@
             let row = document.createElement('div');
             row.className = 'take-row';
             
+            let topBar = document.createElement('div');
+            topBar.className = 'take-top-bar';
+
             let takeInfo = document.createElement('div');
             takeInfo.className = 'take-info';
             takeInfo.innerHTML = `<span>${labelPrefix} ${takeId}</span>`;
@@ -729,7 +1328,7 @@
             timerSpan.className = 'take-timer';
             timerSpan.textContent = "00:00";
             takeInfo.appendChild(timerSpan);
-            row.appendChild(takeInfo);
+            topBar.appendChild(takeInfo);
             
             let btnGroup = document.createElement('div');
             btnGroup.className = 'compact-group';
@@ -738,15 +1337,65 @@
             playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
             playBtn.className = 'secondary';
 
-            let loopItemRef = { audio: audioEl, playBtn: playBtn, timer: timerSpan, sourceNode: sourceNode, isSynth: isSynth };
+            let removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+            removeBtn.className = 'secondary';
+            removeBtn.style.borderColor = 'var(--accent-red)';
+            removeBtn.style.color = 'var(--accent-red)';
+
+            btnGroup.appendChild(playBtn);
+            btnGroup.appendChild(removeBtn);
+            topBar.appendChild(btnGroup);
+            row.appendChild(topBar);
+
+            let waveformContainer = document.createElement('div');
+            waveformContainer.className = 'waveform-container';
+
+            let waveCanvas = document.createElement('canvas');
+            waveCanvas.className = 'waveform-canvas';
+            waveformContainer.appendChild(waveCanvas);
+
+            let playhead = document.createElement('div');
+            playhead.className = 'playhead-indicator';
+            waveformContainer.appendChild(playhead);
+
+            row.appendChild(waveformContainer);
+            containerEl.appendChild(row);
+
+            let loopItemRef = { audio: audioEl, playBtn: playBtn, timer: timerSpan, sourceNode: sourceNode, isSynth: isSynth, playhead: playhead };
             activeLoopElements.push(loopItemRef);
+
+            fetch(dataUrl)
+                .then(res => res.arrayBuffer())
+                .then(buf => audioCtx ? audioCtx.decodeAudioData(buf) : null)
+                .then(decodedBuffer => {
+                    if (decodedBuffer) {
+                        drawWaveform(decodedBuffer, waveCanvas);
+                    }
+                }).catch(e => {});
+
+            waveformContainer.addEventListener('click', (e) => {
+                let rect = waveformContainer.getBoundingClientRect();
+                let clickX = e.clientX - rect.left;
+                let pct = Math.max(0, Math.min(1, clickX / rect.width));
+                if (audioEl.duration) {
+                    audioEl.currentTime = pct * audioEl.duration;
+                    playhead.style.left = `${pct * 100}%`;
+                }
+            });
 
             audioEl.addEventListener('loadedmetadata', () => {
                 if(!isNaN(audioEl.duration) && audioEl.duration !== Infinity) timerSpan.textContent = formatTime(audioEl.duration);
             });
 
             audioEl.addEventListener('timeupdate', () => {
-                if (!audioEl.paused) timerSpan.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration || 0)}`;
+                if (!audioEl.paused) {
+                    timerSpan.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration || 0)}`;
+                    if (audioEl.duration) {
+                        let pct = (audioEl.currentTime / audioEl.duration) * 100;
+                        playhead.style.left = `${pct}%`;
+                    }
+                }
             });
 
             playBtn.addEventListener('click', () => {
@@ -758,52 +1407,63 @@
                     audioEl.play(); 
                     playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'; 
                     playBtn.style.color = 'var(--accent-red)';
-                    logAction(`Started playing loop: ${labelPrefix} ${takeId}`);
                 } else { 
                     audioEl.pause(); 
                     audioEl.currentTime = 0; 
+                    playhead.style.left = '0%';
                     playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'; 
                     playBtn.style.color = 'var(--accent-yellow)'; 
                     timerSpan.textContent = formatTime(audioEl.duration || 0);
-                    logAction(`Stopped playing loop: ${labelPrefix} ${takeId}`);
                 }
             });
 
-            audioEl.addEventListener('ended', () => {
-                playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                playBtn.style.color = 'var(--accent-yellow)';
-                timerSpan.textContent = formatTime(audioEl.duration || 0);
-            });
-
-            let removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-            removeBtn.className = 'secondary';
-            removeBtn.style.borderColor = 'var(--accent-red)';
-            removeBtn.style.color = 'var(--accent-red)';
             removeBtn.addEventListener('click', () => {
-                if(confirm(`Are you sure you want to delete ${labelPrefix} ${takeId}?`)) {
+                confirmAction(`Delete recorded ${labelPrefix}?`, 'DELETE RECORDED LOOP', () => {
+                    recordState(`Delete ${labelPrefix}`);
                     audioEl.pause();
                     row.remove();
-                    let idx = -1;
-                    for(let i=0; i<takesArray.length; i++) {
-                        if(takesArray[i].dataUrl === dataUrl) { idx = i; break; }
-                    }
+                    let idx = takesArray.findIndex(t => t.dataUrl === dataUrl);
                     if(idx > -1) takesArray.splice(idx, 1);
-                    
                     let refIdx = activeLoopElements.indexOf(loopItemRef);
                     if(refIdx > -1) activeLoopElements.splice(refIdx, 1);
-
                     if(takesArray.length === 0) {
-                        containerEl.innerHTML = `<div style="color: var(--text-muted); font-size:calc(9px * var(--ui-scale)); text-align:center; margin-top:10px;">No ${labelPrefix.toLowerCase()} takes recorded.</div>`;
+                        containerEl.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No takes recorded.</div>`;
                     }
-                    logAction(`Deleted take: ${labelPrefix} ${takeId}`);
-                }
+                    logAction('Deleted recorded loop');
+                });
             });
+        }
 
-            btnGroup.appendChild(playBtn);
-            btnGroup.appendChild(removeBtn);
-            row.appendChild(btnGroup);
-            containerEl.appendChild(row);
+        function drawWaveform(audioBuffer, canvasEl) {
+            let ctx = canvasEl.getContext('2d');
+            let w = canvasEl.width = canvasEl.offsetWidth || 300;
+            let h = canvasEl.height = canvasEl.offsetHeight || 36;
+            
+            ctx.fillStyle = '#040404';
+            ctx.fillRect(0, 0, w, h);
+
+            let rawData = audioBuffer.getChannelData(0);
+            let samplesPerPixel = Math.floor(rawData.length / w);
+            let centerY = h / 2;
+
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#cc9900';
+            ctx.beginPath();
+
+            for (let x = 0; x < w; x++) {
+                let min = 1.0;
+                let max = -1.0;
+                for (let j = 0; j < samplesPerPixel; j++) {
+                    let val = rawData[(x * samplesPerPixel) + j];
+                    if (val < min) min = val;
+                    if (val > max) max = val;
+                }
+                let yMin = (1 + min) * centerY;
+                let yMax = (1 + max) * centerY;
+                ctx.moveTo(x, yMin);
+                ctx.lineTo(x, yMax);
+            }
+            ctx.stroke();
         }
 
         function formatTime(seconds) {
@@ -818,28 +1478,34 @@
                 try {
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     micSource = audioCtx.createMediaStreamSource(micStream);
-                    
                     micAnalyser = audioCtx.createAnalyser();
-                    micAnalyser.fftSize = 8192;
+                    micAnalyser.fftSize = 32768;
                     micSource.connect(micAnalyser);
-                    
                     isMicActive = true;
                     micToggleBtn.style.borderColor = 'var(--accent-red)';
-                    logAction('Enabled microphone active listening (spectrometer visualization only, no real-time playback)');
-                } catch(e) { alert('Mic access denied.'); }
+                    micToggleBtn.style.color = 'var(--accent-red)';
+                    logAction('Microphone activated');
+                } catch(e) {}
             } else {
                 if(micStream) micStream.getTracks().forEach(t => t.stop());
                 if(micSource) micSource.disconnect();
+                micStream = null; micSource = null; micAnalyser = null;
                 isMicActive = false;
-                micToggleBtn.style.borderColor = 'var(--accent-yellow)';
-                logAction('Disabled microphone active listening');
+                micToggleBtn.style.borderColor = 'var(--border-color)';
+                micToggleBtn.style.color = 'var(--text-muted)';
+                logAction('Microphone deactivated');
             }
         });
 
+        let lastFrameTime = performance.now();
         function drawVisualizer() {
             requestAnimationFrame(drawVisualizer);
-            let w = canvas.width = canvas.offsetWidth;
-            let h = canvas.height = canvas.offsetHeight;
+            let now = performance.now();
+            let deltaTime = (now - lastFrameTime) / 1000;
+            lastFrameTime = now;
+
+            let w = canvas.width = canvas.offsetWidth * 2;
+            let h = canvas.height = canvas.offsetHeight * 2;
             canvasCtx.fillStyle = '#020202';
             canvasCtx.fillRect(0, 0, w, h);
 
@@ -857,7 +1523,8 @@
             }
 
             let nyquist = audioCtx.sampleRate / 2;
-            let maxIndexToCheck = Math.floor((30000 / nyquist) * bufferLength);
+            let maxDisplayFreq = 30000 / spectrometerZoomX;
+            let maxIndexToCheck = Math.floor((maxDisplayFreq / nyquist) * bufferLength);
             maxIndexToCheck = Math.min(maxIndexToCheck, bufferLength);
 
             let maxVal = 0;
@@ -866,10 +1533,19 @@
                 if(data[i] > maxVal) { maxVal = data[i]; maxIndex = i; }
             }
             let peakFreq = (maxIndex * nyquist) / bufferLength;
-            peakFreqDisplay.textContent = `PEAK: ${peakFreq.toFixed(2)} Hz`;
+            let peakDb = (maxVal / 255) * 90 - 90;
+            peakFreqDisplay.textContent = `PEAK: ${peakFreq.toFixed(2)} Hz (${peakDb.toFixed(1)} dB)`;
+
+            let totalSum = 0;
+            let highPitchStartIdx = Math.floor(maxIndexToCheck * 0.25); 
+            for (let i = 0; i < maxIndexToCheck; i++) {
+                totalSum += data[i];
+            }
+            let averageMag = totalSum / maxIndexToCheck;
+            let considerableLoudnessThreshold = Math.max(25, averageMag * 1.5);
 
             canvasCtx.strokeStyle = '#0e0e0e';
-            canvasCtx.lineWidth = 1;
+            canvasCtx.lineWidth = 2;
             for(let i = 1; i < 4; i++) {
                 let y = (h / 4) * i;
                 canvasCtx.beginPath(); canvasCtx.moveTo(0, y); canvasCtx.lineTo(w, y); canvasCtx.stroke();
@@ -881,36 +1557,80 @@
                 let barH = (data[i] / 255) * h;
                 let redVal = Math.min(255, barH * 2);
                 canvasCtx.fillStyle = `rgb(${redVal}, ${Math.floor(160 - (barH/2))}, 20)`;
-                canvasCtx.fillRect(x, h - barH, Math.max(1, barW), barH);
+                canvasCtx.fillRect(x, h - barH, Math.max(2, barW), barH);
                 x += barW;
                 if(x > w) break;
             }
 
-            // Draw Markers
-            markers.forEach((m, idx) => {
-                let mx = m.xRatio * w;
-                let my = h - ((m.db + 90) / 90) * h;
+            let currentActiveBuckets = new Set();
+            for (let i = highPitchStartIdx; i < maxIndexToCheck - 1; i++) {
+                if (data[i] >= considerableLoudnessThreshold && data[i] >= data[i-1] && data[i] >= data[i+1]) {
+                    let freq = (i * nyquist) / bufferLength;
+                    let bucketKey = Math.round(freq / 20) * 20; 
+                    currentActiveBuckets.add(bucketKey);
 
-                // Vertical line
-                canvasCtx.strokeStyle = '#cc9900';
-                canvasCtx.lineWidth = 1;
-                canvasCtx.setLineDash([2, 2]);
+                    if (!sustainedHighPitchTracker.has(bucketKey)) {
+                        sustainedHighPitchTracker.set(bucketKey, { duration: 0, exactFreq: freq, marked: false });
+                    }
+                    
+                    let trackInfo = sustainedHighPitchTracker.get(bucketKey);
+                    trackInfo.duration += deltaTime;
+                    trackInfo.exactFreq = freq;
+
+                    if (trackInfo.duration >= 5.0 && !trackInfo.marked) {
+                        trackInfo.marked = true;
+                        let freqRatio = freq / maxDisplayFreq;
+                        if (freqRatio >= 0 && freqRatio <= 1) {
+                            let existingClose = markers.some(m => Math.abs(m.freq - freq) < 100);
+                            if (!existingClose) {
+                                markers.push({ freq: freq, xRatio: freqRatio, timestamp: Date.now() });
+                                logAction(`Auto-marked sustained high tone at ${freq.toFixed(1)} Hz`);
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (let [bucketKey, trackInfo] of sustainedHighPitchTracker.entries()) {
+                if (!currentActiveBuckets.has(bucketKey)) {
+                    trackInfo.duration = Math.max(0, trackInfo.duration - deltaTime * 2);
+                    if (trackInfo.duration <= 0) {
+                        sustainedHighPitchTracker.delete(bucketKey);
+                    }
+                }
+            }
+
+            markers.forEach((m, idx) => {
+                let freqRatio = m.freq / maxDisplayFreq;
+                if (freqRatio < 0 || freqRatio > 1) return;
+                let mx = freqRatio * w;
+                let binIdx = Math.floor((m.freq / nyquist) * bufferLength);
+                let binVal = (binIdx >= 0 && binIdx < bufferLength) ? data[binIdx] : 0;
+                let barH = (binVal / 255) * h;
+                let topY = h - barH;
+
+                canvasCtx.strokeStyle = 'rgba(204, 17, 17, 0.45)';
+                canvasCtx.lineWidth = 6;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(mx, topY);
+                canvasCtx.lineTo(mx, h);
+                canvasCtx.stroke();
+
+                canvasCtx.strokeStyle = 'rgba(204, 153, 0, 0.4)';
+                canvasCtx.lineWidth = 2;
+                canvasCtx.setLineDash([4, 4]);
                 canvasCtx.beginPath();
                 canvasCtx.moveTo(mx, 0);
                 canvasCtx.lineTo(mx, h);
                 canvasCtx.stroke();
                 canvasCtx.setLineDash([]);
 
-                // Marker point
-                canvasCtx.fillStyle = '#cc1111';
-                canvasCtx.fillRect(mx - 2, my - 2, 5, 5);
-
-                // Label
                 canvasCtx.fillStyle = '#e0e0e0';
-                canvasCtx.font = '8px monospace';
-                canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 4, Math.max(10, my - 4));
+                canvasCtx.font = '20px monospace';
+                canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 8, Math.max(20, topY - 8));
             });
         }
     </script>
 </body>
 </html>
+```[cite: 1]
