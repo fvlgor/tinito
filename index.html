@@ -35,23 +35,12 @@
         }
 
         #log-window-modal .modal-box {
-            width: 600px;
-            max-width: 90vw;
-            height: 400px;
-            max-height: 80vh;
+            width: 600px; max-width: 90vw; height: 400px; max-height: 80vh;
         }
         #full-log-content {
-            width: 100%;
-            height: 300px;
-            background: #000;
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            font-size: calc(10px * var(--ui-scale));
-            font-family: monospace;
-            color: var(--text-main);
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
+            width: 100%; height: 300px; background: #000; border: 1px solid var(--border-color);
+            padding: 8px; font-size: calc(10px * var(--ui-scale)); font-family: monospace; color: var(--text-main);
+            overflow-y: auto; white-space: pre-wrap; word-break: break-all;
         }
 
         #welcome-overlay {
@@ -60,115 +49,61 @@
             flex-direction: column; justify-content: center; align-items: center; gap: 20px;
             transition: opacity 0.5s ease;
         }
-        #welcome-overlay.hidden {
-            opacity: 0; pointer-events: none;
-        }
-        .welcome-title {
-            font-size: calc(24px * var(--ui-scale)); color: var(--accent-yellow); letter-spacing: 2px; text-transform: uppercase;
-        }
-        .welcome-subtitle {
-            font-size: calc(12px * var(--ui-scale)); color: var(--text-muted); max-width: 400px; text-align: center; line-height: 1.5;
-        }
-        .welcome-canvas-container {
-            width: 400px; height: 100px; background: #000; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative;
-        }
+        #welcome-overlay.hidden { opacity: 0; pointer-events: none; }
+        .welcome-title { font-size: calc(24px * var(--ui-scale)); color: var(--accent-yellow); letter-spacing: 2px; text-transform: uppercase; }
+        .welcome-subtitle { font-size: calc(12px * var(--ui-scale)); color: var(--text-muted); max-width: 400px; text-align: center; line-height: 1.5; }
+        .welcome-canvas-container { width: 400px; height: 100px; background: #000; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; }
         .welcome-canvas { width: 100%; height: 100%; }
         .enter-btn {
             background-color: var(--accent-red); color: #000; font-size: calc(16px * var(--ui-scale)); padding: 12px 30px;
             font-family: monospace; font-weight: bold; cursor: pointer; border: none; border-radius: 4px;
             animation: pulse-glow 1.5s infinite alternate; transition: transform 0.2s ease, background-color 0.2s ease;
         }
-        .enter-btn:hover {
-            background-color: var(--accent-yellow); transform: scale(1.05);
-            box-shadow: 0 0 15px var(--accent-yellow);
-        }
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 5px var(--accent-red); }
-            100% { box-shadow: 0 0 20px var(--accent-yellow); }
-        }
+        .enter-btn:hover { background-color: var(--accent-yellow); transform: scale(1.05); box-shadow: 0 0 15px var(--accent-yellow); }
+        @keyframes pulse-glow { 0% { box-shadow: 0 0 5px var(--accent-red); } 100% { box-shadow: 0 0 20px var(--accent-yellow); } }
 
         .top-banner-bar {
             width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
             padding: calc(6px * var(--ui-scale)) calc(8px * var(--ui-scale)); display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start;
-            gap: calc(8px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0;
-            resize: none; overflow: auto;
+            gap: calc(8px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0; overflow: auto;
         }
-        
         .master-volume-banner {
             width: 100%; background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
             padding: calc(8px * var(--ui-scale)); display: flex; align-items: center; justify-content: center;
-            gap: calc(10px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0;
-            resize: none; overflow: auto;
+            gap: calc(10px * var(--ui-scale)); margin-bottom: calc(4px * var(--ui-scale)); flex-shrink: 0; overflow: auto;
         }
-
-        .banner-group {
-            display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); flex-wrap: wrap;
-        }
-
-        #notification-container {
-            position: fixed; bottom: 15px; right: 15px; z-index: 20000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; max-width: 300px;
-        }
+        .banner-group { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); flex-wrap: wrap; }
+        #notification-container { position: fixed; bottom: 15px; right: 15px; z-index: 20000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; max-width: 300px; }
         .notification-toast {
             background: rgba(9, 9, 9, 0.95); border: 1px solid var(--accent-yellow); color: var(--text-main);
             padding: 8px 12px; border-radius: 4px; font-size: calc(10px * var(--ui-scale)); font-family: monospace;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 1; transition: opacity 0.5s ease, transform 0.3s ease;
-            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 1; transition: opacity 0.5s ease, transform 0.3s ease; pointer-events: auto;
         }
-        .notification-toast.fade-out {
-            opacity: 0; transform: translateY(10px);
-        }
+        .notification-toast.fade-out { opacity: 0; transform: translateY(10px); }
 
         #spectrometer-section {
             width: 100%; height: auto; background-color: var(--panel-bg);
-            border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column; padding: calc(6px * var(--ui-scale)); gap: calc(4px * var(--ui-scale)); flex-shrink: 0; margin-bottom: calc(4px * var(--ui-scale));
-            resize: none; overflow: auto;
+            border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column; padding: calc(6px * var(--ui-scale)); gap: calc(4px * var(--ui-scale)); flex-shrink: 0; margin-bottom: calc(4px * var(--ui-scale)); overflow: auto;
         }
-        .canvas-scroll-wrapper {
-            width: 100%; height: calc(var(--spectrometer-height) * var(--ui-scale)); overflow-x: auto; overflow-y: hidden; position: relative; border: 1px solid var(--border-color); background: #000;
-        }
-        .canvas-container {
-            position: relative; width: calc(100% * var(--spectrometer-zoom-x)); height: 100%; display: flex; flex-direction: column; cursor: crosshair; min-width: 100%;
-        }
+        .canvas-scroll-wrapper { width: 100%; height: calc(var(--spectrometer-height) * var(--ui-scale)); overflow-x: auto; overflow-y: hidden; position: relative; border: 1px solid var(--border-color); background: #000; }
+        .canvas-container { position: relative; width: calc(100% * var(--spectrometer-zoom-x)); height: 100%; display: flex; flex-direction: column; cursor: crosshair; min-width: 100%; }
         canvas { width: 100%; height: calc(100% - 20px); background: #000; display: block; }
-        .axis-labels-x {
-            display: flex; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); padding: 2px 4px; height: 20px; width: 100%; background: #050505;
-        }
-        .axis-labels-y {
-            position: absolute; right: 4px; top: 4px; bottom: 24px; display: flex; flex-direction: column; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); pointer-events: none; text-align: right;
-        }
+        .axis-labels-x { display: flex; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); padding: 2px 4px; height: 20px; width: 100%; background: #050505; }
+        .axis-labels-y { position: absolute; right: 4px; top: 4px; bottom: 24px; display: flex; flex-direction: column; justify-content: space-between; font-size: calc(10px * var(--ui-scale)); color: var(--text-muted); pointer-events: none; text-align: right; }
 
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(280px * var(--ui-scale)), 1fr)); gap: calc(4px * var(--ui-scale)); flex-grow: 1; width: 100%; align-content: start; }
-        .panel {
-            background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px;
-            padding: calc(6px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); height: auto; min-height: 120px; overflow: auto;
-            resize: vertical;
-        }
-        .panel-header {
-            font-size: calc(10px * var(--ui-scale)); font-weight: 300; color: var(--accent-yellow); display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: calc(2px * var(--ui-scale));
-        }
+        .panel { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 4px; padding: calc(6px * var(--ui-scale)); display: flex; flex-direction: column; gap: calc(4px * var(--ui-scale)); height: auto; min-height: 120px; overflow: auto; resize: vertical; }
+        .panel-header { font-size: calc(10px * var(--ui-scale)); font-weight: 300; color: var(--accent-yellow); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: calc(2px * var(--ui-scale)); }
+        
         button {
             background-color: var(--accent-red); color: #000; border: none; padding: calc(3px * var(--ui-scale)) calc(7px * var(--ui-scale));
             font-size: calc(10px * var(--ui-scale)); font-family: monospace; cursor: pointer; border-radius: 2px; display: inline-flex; align-items: center; gap: calc(4px * var(--ui-scale));
             transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
         }
-        button:hover { 
-            background-color: var(--accent-yellow); 
-            box-shadow: 0 0 8px var(--accent-yellow);
-        }
-        button:disabled {
-            opacity: 0.4; cursor: not-allowed; box-shadow: none !important; background-color: #333 !important; color: #777 !important;
-        }
+        button:hover { background-color: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); }
+        button:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none !important; background-color: #333 !important; color: #777 !important; }
         button.secondary { background-color: #0d0d0d; color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
-        button.secondary:hover {
-            background-color: rgba(204, 153, 0, 0.2);
-            box-shadow: 0 0 8px var(--accent-yellow);
-        }
-        
-        #play-all-tones-btn, #stop-all-tones-btn {
-            min-width: 0;
-            padding: calc(3px * var(--ui-scale)) calc(4px * var(--ui-scale));
-        }
+        button.secondary:hover { background-color: rgba(204, 153, 0, 0.2); box-shadow: 0 0 8px var(--accent-yellow); }
 
         input, select { background: #000; border: 1px solid var(--border-color); color: var(--text-main); font-family: monospace; font-size: calc(10px * var(--ui-scale)); padding: calc(2px * var(--ui-scale)); border-radius: 2px; }
         input[type="range"] { accent-color: var(--accent-red); height: calc(12px * var(--ui-scale)); }
@@ -187,56 +122,19 @@
         .take-info { display: flex; align-items: center; gap: calc(6px * var(--ui-scale)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .take-timer { font-family: monospace; color: var(--text-muted); font-size: calc(10px * var(--ui-scale)); }
         
-        .waveform-container {
-            position: relative;
-            width: 100%;
-            height: calc(36px * var(--ui-scale));
-            background: #040404;
-            border: 1px solid var(--border-color);
-            border-radius: 2px;
-            overflow: hidden;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .waveform-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: transparent;
-        }
-        .playhead-indicator {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: var(--accent-yellow);
-            pointer-events: none;
-            left: 0%;
-            box-shadow: 0 0 4px var(--accent-yellow);
-        }
-
+        .waveform-container { position: relative; width: 100%; height: calc(36px * var(--ui-scale)); background: #040404; border: 1px solid var(--border-color); border-radius: 2px; overflow: hidden; cursor: pointer; flex-shrink: 0; }
+        .waveform-canvas { width: 100%; height: 100%; display: block; background: transparent; }
+        .playhead-indicator { position: absolute; top: 0; bottom: 0; width: 2px; background-color: var(--accent-yellow); pointer-events: none; left: 0%; box-shadow: 0 0 4px var(--accent-yellow); }
         .compact-group { display: flex; gap: calc(4px * var(--ui-scale)); align-items: center; flex-shrink: 0; }
         .icon { width: calc(12px * var(--ui-scale)); height: calc(12px * var(--ui-scale)); stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; display: inline-block; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8); z-index: 10000; display: flex;
-            justify-content: center; align-items: center;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center; }
         .modal-overlay.hidden { display: none; }
-        .modal-box {
-            background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 4px;
-            display: flex; flex-direction: column; gap: 10px; min-width: 320px; max-width: 90vw; max-height: 80vh; overflow-y: auto;
-        }
+        .modal-box { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 4px; display: flex; flex-direction: column; gap: 10px; min-width: 320px; max-width: 90vw; max-height: 80vh; overflow-y: auto; }
         .modal-title { font-size: calc(10px * var(--ui-scale)); color: var(--accent-yellow); font-weight: bold; margin-bottom: 5px; }
         .modal-buttons { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
-        
-        #markers-list-container {
-            display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-top: 5px; border: 1px solid var(--border-color); padding: 4px; background: #000;
-        }
-        .marker-item-row {
-            display: flex; justify-content: space-between; align-items: center; font-size: calc(10px * var(--ui-scale)); padding: 3px 6px; border-bottom: 1px solid var(--border-color);
-        }
+        #markers-list-container { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; margin-top: 5px; border: 1px solid var(--border-color); padding: 4px; background: #000; }
+        .marker-item-row { display: flex; justify-content: space-between; align-items: center; font-size: calc(10px * var(--ui-scale)); padding: 3px 6px; border-bottom: 1px solid var(--border-color); }
     </style>
 </head>
 <body>
@@ -275,7 +173,7 @@
     <div id="clear-markers-modal" class="modal-overlay hidden" style="z-index: 10050;">
         <div class="modal-box">
             <div class="modal-title">MARKER MANAGEMENT</div>
-            <div style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted); margin-bottom:5px;">Active Markers List (Central Time Timestamps):</div>
+            <div style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted); margin-bottom:5px;">Active Markers List:</div>
             <div id="markers-list-container">
                 <div style="color:var(--text-muted); text-align:center; font-size:calc(10px * var(--ui-scale));">No markers active.</div>
             </div>
@@ -288,19 +186,19 @@
 
     <div class="top-banner-bar">
         <div class="banner-group">
-            <button id="undo-btn" class="secondary" title="Undo Last Action" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg></button>
-            <button id="redo-btn" class="secondary" title="Redo Last Action" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg></button>
-            <button id="master-toggle" class="secondary" title="Freeze/Resume Spectrogram"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> Freeze/Resume</button>
+            <button id="undo-btn" class="secondary" title="Undo" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg></button>
+            <button id="redo-btn" class="secondary" title="Redo" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg></button>
+            <button id="master-toggle" class="secondary" title="Freeze/Resume"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> Freeze/Resume</button>
             <button id="mic-toggle-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Microphone"><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg> Mic</button>
-            <button id="size-toggle-btn" class="secondary" title="Cycle Spectrometer Size"><svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg> Size</button>
-            <button id="clear-markers-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Markers List & Options"><svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> Markers</button>
-            <button id="open-log-window-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Open Full Scrollable Log Window">History</button>
-            <button id="zoom-out-btn" class="secondary" title="Decrease UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI -</button>
-            <button id="zoom-in-btn" class="secondary" title="Increase UI Size"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI +</button>
-            <button id="spec-zoom-out-btn" class="secondary" title="Spectrogram Zoom Out"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Zoom out</button>
-            <button id="spec-zoom-in-btn" class="secondary" title="Spectrogram Zoom In"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Zooom In</button>
-            <button id="save-preset-btn" class="secondary" title="Save Session & Export MP3s"><svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save</button>
-            <button id="load-preset-btn" class="secondary" title="Load Session"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Load</button>
+            <button id="size-toggle-btn" class="secondary" title="Cycle Size"><svg class="icon" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg> Size</button>
+            <button id="clear-markers-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Markers"><svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg> Markers</button>
+            <button id="open-log-window-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="History">History</button>
+            <button id="zoom-out-btn" class="secondary" title="UI -"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI -</button>
+            <button id="zoom-in-btn" class="secondary" title="UI +"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> UI +</button>
+            <button id="spec-zoom-out-btn" class="secondary" title="Zoom Out">Zoom out</button>
+            <button id="spec-zoom-in-btn" class="secondary" title="Zoom In">Zoom In</button>
+            <button id="save-preset-btn" class="secondary" title="Save"><svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path></svg> Save</button>
+            <button id="load-preset-btn" class="secondary" title="Load"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path></svg> Load</button>
             <input type="file" id="load-file-input" style="display: none;">
         </div>
     </div>
@@ -332,7 +230,7 @@
 
     <div class="master-volume-banner">
         <div class="compact-group">
-            <label style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted)"><svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg> Master Volume</label>
+            <label style="font-size:calc(10px * var(--ui-scale)); color:var(--text-muted)">Master Volume</label>
             <input type="range" id="master-volume" min="0" max="1" step="0.01" value="0.5" style="width: calc(180px * var(--ui-scale));">
         </div>
     </div>
@@ -340,11 +238,11 @@
     <div class="dashboard">
         <div class="panel">
             <div class="panel-header">
-                <span><svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg> TONES</span>
+                <span>TONES</span>
                 <div class="compact-group">
-                    <button id="play-all-tones-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Tones"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play All</button>
-                    <button id="stop-all-tones-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Tones"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Stop All</button>
-                    <button id="add-tone-btn"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add</button>
+                    <button id="play-all-tones-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);">Play All</button>
+                    <button id="stop-all-tones-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);">Stop All</button>
+                    <button id="add-tone-btn">Add</button>
                 </div>
             </div>
             <div id="tone-list"></div>
@@ -352,11 +250,11 @@
 
         <div class="panel">
             <div class="panel-header">
-                <span><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> SYNTH LOOPS</span>
+                <span>SYNTH LOOPS</span>
                 <div class="compact-group">
-                    <button id="play-all-synth-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-                    <button id="stop-all-synth-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Synth Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
-                    <button id="rec-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec</button>
+                    <button id="play-all-synth-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);">▶</button>
+                    <button id="stop-all-synth-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);">■</button>
+                    <button id="rec-take-btn">Rec Tones</button>
                 </div>
             </div>
             <div id="synth-takes-list" class="takes-container">
@@ -366,11 +264,11 @@
 
         <div class="panel" style="resize: none;">
             <div class="panel-header">
-                <span><svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path></svg> MIC LOOPS (320Kbps)</span>
+                <span>MIC LOOPS</span>
                 <div class="compact-group">
-                    <button id="play-all-mic-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);" title="Play All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button>
-                    <button id="stop-all-mic-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);" title="Stop All Mic Loops"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></button>
-                    <button id="rec-mic-take-btn"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Mic</button>
+                    <button id="play-all-mic-btn" class="secondary" style="border-color:var(--accent-yellow); color:var(--accent-yellow);">▶</button>
+                    <button id="stop-all-mic-btn" class="secondary" style="border-color:var(--accent-red); color:var(--accent-red);">■</button>
+                    <button id="rec-mic-take-btn">Rec Mic</button>
                 </div>
             </div>
             <div id="mic-takes-list" class="takes-container">
@@ -398,6 +296,9 @@
         let undoStack = [];
         let redoStack = [];
         let actionLogHistory = ["System initialized. Ready."];
+
+        let isHoveringSpectrum = false;
+        let hoverXRatio = 0;
 
         const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
         const localizedNoteNames = {
@@ -441,16 +342,13 @@
             state.tones.forEach(tData => {
                 addToneRow(tData.freq, tData.type, tData.gainVal, tData.isPlaying, false);
             });
-
             markers = JSON.parse(JSON.stringify(state.markers));
-
             synthTakes = [];
             activeLoopElements = activeLoopElements.filter(el => !el.isSynth);
             synthTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>`;
             state.synthTakes.forEach(st => {
                 addTakeUI(st.dataUrl, synthTakes, synthTakesList, 'Synth Take', true, false);
             });
-
             micTakes = [];
             activeLoopElements = activeLoopElements.filter(el => el.isSynth);
             micTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>`;
@@ -578,10 +476,7 @@
             let h = welcomeCanvas.height = welcomeCanvas.offsetHeight;
             welcomeCtx.fillStyle = '#020202';
             welcomeCtx.fillRect(0, 0, w, h);
-
-            let bars = 40;
-            let barW = w / bars;
-            let time = Date.now() * 0.003;
+            let bars = 40, barW = w / bars, time = Date.now() * 0.003;
             for (let i = 0; i < bars; i++) {
                 let noise = Math.sin(time + i * 0.3) * 0.5 + 0.5;
                 let highBias = Math.pow(i / bars, 2);
@@ -602,7 +497,6 @@
             toast.className = 'notification-toast';
             toast.textContent = msg;
             notificationContainer.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.add('fade-out');
                 setTimeout(() => { toast.remove(); }, 500);
@@ -616,7 +510,6 @@
             sessionStartTime = Date.now();
             initAudioContext();
             
-            // Ensure audio context is running on user gesture
             if (audioCtx && audioCtx.state === 'suspended') {
                 await audioCtx.resume();
             }
@@ -646,27 +539,21 @@
         zoomInBtn.addEventListener('click', () => {
             uiScale = Math.min(1.8, uiScale + 0.1);
             document.documentElement.style.setProperty('--ui-scale', uiScale);
-            logAction(`Increased UI scale to ${uiScale.toFixed(1)}x`);
         });
-
         zoomOutBtn.addEventListener('click', () => {
             uiScale = Math.max(0.6, uiScale - 0.1);
             document.documentElement.style.setProperty('--ui-scale', uiScale);
-            logAction(`Decreased UI scale to ${uiScale.toFixed(1)}x`);
         });
 
         specZoomInBtn.addEventListener('click', () => {
             spectrometerZoomX = Math.min(4.0, spectrometerZoomX + 0.5);
             document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
             updateAxisLabels();
-            logAction(`Spectrogram Zoom: ${spectrometerZoomX}x`);
         });
-
         specZoomOutBtn.addEventListener('click', () => {
             spectrometerZoomX = Math.max(1.0, spectrometerZoomX - 0.5);
             document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
             updateAxisLabels();
-            logAction(`Spectrogram Zoom: ${spectrometerZoomX}x`);
         });
 
         canvasScrollWrapper.addEventListener('wheel', (e) => {
@@ -676,51 +563,13 @@
                 spectrometerZoomX = Math.max(1.0, Math.min(4.0, spectrometerZoomX + zoomDelta));
                 document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
                 updateAxisLabels();
-            } else if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-                canvasScrollWrapper.scrollLeft += (e.deltaX !== 0 ? e.deltaX : e.deltaY);
             } else {
-                let zoomDelta = e.deltaY < 0 ? 0.1 : -0.1;
-                spectrometerZoomX = Math.max(1.0, Math.min(4.0, spectrometerZoomX + zoomDelta));
-                document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
-                updateAxisLabels();
+                canvasScrollWrapper.scrollLeft += (e.deltaX !== 0 ? e.deltaX : e.deltaY);
             }
         }, { passive: false });
 
-        let initialPinchDistance = null;
-        canvasScrollWrapper.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                initialPinchDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-            }
-        }, { passive: true });
-
-        canvasScrollWrapper.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && initialPinchDistance !== null) {
-                let currentDistance = Math.hypot(
-                    e.touches[0].clientX - e.touches[1].clientX,
-                    e.touches[0].clientY - e.touches[1].clientY
-                );
-                let factor = currentDistance / initialPinchDistance;
-                if (factor > 1.05) {
-                    spectrometerZoomX = Math.min(4.0, spectrometerZoomX + 0.05);
-                    document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
-                    updateAxisLabels();
-                } else if (factor < 0.95) {
-                    spectrometerZoomX = Math.max(1.0, spectrometerZoomX - 0.05);
-                    document.documentElement.style.setProperty('--spectrometer-zoom-x', spectrometerZoomX);
-                    updateAxisLabels();
-                }
-            }
-        }, { passive: true });
-
-        canvasScrollWrapper.addEventListener('touchend', () => {
-            initialPinchDistance = null;
-        });
-
         function updateAxisLabels() {
-            let maxFreq = 30000 / spectrometerZoomX;
+            let maxFreq = audioCtx ? audioCtx.sampleRate / 2 : 22050;
             let step = maxFreq / 4;
             axisLabelsX.innerHTML = `
                 <span>0 Hz</span>
@@ -734,12 +583,8 @@
         sizeToggleBtn.addEventListener('click', () => {
             spectrometerSizeState = (spectrometerSizeState + 1) % 2;
             document.body.classList.remove('spectrometer-fullscreen');
-            if (spectrometerSizeState === 0) {
-                document.documentElement.style.setProperty('--spectrometer-height', '70px');
-                logAction('Spectrometer size: Original (Halved)');
-            } else if (spectrometerSizeState === 1) {
+            if (spectrometerSizeState === 1) {
                 document.body.classList.add('spectrometer-fullscreen');
-                logAction('Spectrometer size: Full Screen (Controls Visible)');
             }
         });
 
@@ -747,11 +592,6 @@
             renderMarkersModalList();
             clearMarkersModal.classList.remove('hidden');
         });
-
-        function formatTimestampCentralTime(ms) {
-            let targetDate = new Date(ms);
-            return targetDate.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + "." + Math.floor((ms % 1000) / 100);
-        }
 
         function renderMarkersModalList() {
             markersListContainer.innerHTML = '';
@@ -762,9 +602,7 @@
             markers.forEach((m, idx) => {
                 let row = document.createElement('div');
                 row.className = 'marker-item-row';
-                let timeStr = m.timestamp ? formatTimestampCentralTime(m.timestamp) : "00:00:00.0";
-                row.innerHTML = `<span>#${idx + 1}: ${m.freq.toFixed(2)} Hz <span style="color:var(--text-muted);">[CT: ${timeStr}]</span></span>`;
-                
+                row.innerHTML = `<span>#${idx + 1}: ${m.freq.toFixed(2)} Hz</span>`;
                 let delBtn = document.createElement('button');
                 delBtn.textContent = 'Delete';
                 delBtn.className = 'secondary';
@@ -773,37 +611,24 @@
                 delBtn.style.borderColor = 'var(--accent-red)';
                 delBtn.style.color = 'var(--accent-red)';
                 delBtn.addEventListener('click', () => {
-                    confirmAction(`Delete marker #${idx + 1} (${m.freq.toFixed(1)} Hz)?`, 'DELETE MARKER', () => {
-                        recordState('Delete Marker');
-                        markers.splice(idx, 1);
-                        renderMarkersModalList();
-                        logAction(`Deleted marker #${idx + 1}`);
-                    });
+                    recordState('Delete Marker');
+                    markers.splice(idx, 1);
+                    renderMarkersModalList();
                 });
                 row.appendChild(delBtn);
                 markersListContainer.appendChild(row);
             });
         }
 
-        modalCancelBtn.addEventListener('click', () => {
-            clearMarkersModal.classList.add('hidden');
-        });
-
+        modalCancelBtn.addEventListener('click', () => { clearMarkersModal.classList.add('hidden'); });
         modalClearAllBtn.addEventListener('click', () => {
-            if (markers.length > 0) {
-                confirmAction('Are you sure you want to clear all active markers?', 'CLEAR ALL MARKERS', () => {
-                    recordState('Clear All Markers');
-                    markers = [];
-                    renderMarkersModalList();
-                    logAction('All markers cleared');
-                });
-            }
+            markers = [];
+            renderMarkersModalList();
         });
 
         function initAudioContext() {
             if (isAudioInit) return;
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            // Removed fixed 96000 sampleRate to prevent compatibility crashes on mobile hardware
             audioCtx = new AudioContext();
 
             masterGain = audioCtx.createGain();
@@ -819,7 +644,7 @@
 
             analyser = audioCtx.createAnalyser();
             analyser.fftSize = 16384;
-            analyser.smoothingTimeConstant = 0.8;
+            analyser.smoothingTimeConstant = 0.1;
 
             masterGain.connect(analyser);
             analyser.connect(audioCtx.destination);
@@ -835,8 +660,8 @@
 
             isAudioInit = true;
             updateMasterToggleUI();
+            updateAxisLabels();
             fftInfoLabel.textContent = `FFT: ${analyser.fftSize} | SR: ${audioCtx.sampleRate}Hz`;
-
             drawVisualizer();
         }
 
@@ -844,202 +669,32 @@
             if (!isAudioInit) {
                 masterToggle.style.borderColor = 'var(--border-color)';
                 masterToggle.style.color = 'var(--text-muted)';
-                masterToggle.style.backgroundColor = '#0d0d0d';
             } else if (audioCtx.state === 'running') {
                 masterToggle.style.borderColor = 'var(--accent-red)';
                 masterToggle.style.color = 'var(--accent-red)';
-                masterToggle.style.backgroundColor = '#0d0d0d';
-            } else if (audioCtx.state === 'suspended') {
+            } else {
                 masterToggle.style.borderColor = 'var(--accent-yellow)';
                 masterToggle.style.color = 'var(--accent-yellow)';
-                masterToggle.style.backgroundColor = '#0d0d0d';
             }
         }
 
         masterToggle.addEventListener('click', async () => {
-            if (!isAudioInit) {
-                initAudioContext();
-            } else if (audioCtx.state === 'suspended') { 
-                await audioCtx.resume(); 
-            } else if (audioCtx.state === 'running') { 
-                await audioCtx.suspend(); 
-            }
+            if (!isAudioInit) initAudioContext();
+            else if (audioCtx.state === 'suspended') await audioCtx.resume();
+            else if (audioCtx.state === 'running') await audioCtx.suspend();
             updateMasterToggleUI();
-            logAction(`Spectrogram State: ${audioCtx.state}`);
         });
 
-        stopAllTonesBtn.addEventListener('click', () => { 
-            tones.forEach(t => t.stop()); 
-            logAction('Stopped all tones');
-        });
-
+        stopAllTonesBtn.addEventListener('click', () => { tones.forEach(t => t.stop()); });
         playAllTonesBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if (!isAudioInit) initAudioContext();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
             tones.forEach(t => t.start());
-            logAction('Played all tone generators');
-        });
-
-        playAllSynthBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            activeLoopElements.filter(item => item.isSynth).forEach(item => {
-                if(item.audio.paused) {
-                    if (!item.sourceNode && audioCtx) {
-                        item.sourceNode = audioCtx.createMediaElementSource(item.audio);
-                        item.sourceNode.connect(loopBus);
-                    }
-                    item.audio.play();
-                    item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
-                    item.playBtn.style.color = 'var(--accent-red)';
-                }
-            });
-            logAction('Played all synth loops');
-        });
-
-        stopAllSynthBtn.addEventListener('click', () => {
-            activeLoopElements.filter(item => item.isSynth).forEach(item => {
-                item.audio.pause();
-                item.audio.currentTime = 0;
-                item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                item.playBtn.style.color = 'var(--accent-yellow)';
-                item.timer.textContent = formatTime(item.audio.duration || 0);
-            });
-            logAction('Stopped all synth loops');
-        });
-
-        playAllMicBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            activeLoopElements.filter(item => !item.isSynth).forEach(item => {
-                if(item.audio.paused) {
-                    if (!item.sourceNode && audioCtx) {
-                        item.sourceNode = audioCtx.createMediaElementSource(item.audio);
-                        item.sourceNode.connect(loopBus);
-                    }
-                    item.audio.play();
-                    item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
-                    item.playBtn.style.color = 'var(--accent-red)';
-                }
-            });
-            logAction('Played all mic loops');
-        });
-
-        stopAllMicBtn.addEventListener('click', () => {
-            activeLoopElements.filter(item => !item.isSynth).forEach(item => {
-                item.audio.pause();
-                item.audio.currentTime = 0;
-                item.playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-                item.playBtn.style.color = 'var(--accent-yellow)';
-                item.timer.textContent = formatTime(item.audio.duration || 0);
-            });
-            logAction('Stopped all mic loops');
         });
 
         masterVolume.addEventListener('input', (e) => {
             if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(e.target.value), audioCtx.currentTime);
         });
-
-        savePresetBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            const data = {
-                volume: masterVolume.value,
-                tones: tones.map(t => ({ freq: t.freq, type: t.type, gain: t.gainVal, playing: t.isPlaying })),
-                synthTakes: synthTakes.map(st => ({ name: st.name, dataUrl: st.dataUrl })),
-                micTakes: micTakes.map(mt => ({ name: mt.name, dataUrl: mt.dataUrl }))
-            };
-            const sessionBlob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/octet-stream' });
-            const sessionUrl = URL.createObjectURL(sessionBlob);
-            const aSession = document.createElement('a');
-            aSession.href = sessionUrl;
-            aSession.download = 'synthsession.synthsession';
-            aSession.click();
-            URL.revokeObjectURL(sessionUrl);
-
-            for (let i = 0; i < synthTakes.length; i++) {
-                await exportDataUrlAsMp3(synthTakes[i].dataUrl, `synth-take-${i + 1}.mp3`);
-            }
-            for (let i = 0; i < micTakes.length; i++) {
-                await exportDataUrlAsMp3(micTakes[i].dataUrl, `mic-take-${i + 1}.mp3`);
-            }
-            logAction('Saved session & exported MP3s');
-        });
-
-        loadPresetBtn.addEventListener('click', () => { loadFileInput.click(); });
-
-        loadFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const data = JSON.parse(event.target.result);
-                    recordState('Load Session File');
-                    if (!isAudioInit) initAudioContext();
-                    masterVolume.value = data.volume || 0.5;
-                    if (masterGain && audioCtx) masterGain.gain.setValueAtTime(parseFloat(masterVolume.value), audioCtx.currentTime);
-
-                    tones.forEach(t => t.stop());
-                    tones = [];
-                    toneList.innerHTML = '';
-                    if (data.tones && Array.isArray(data.tones)) {
-                        data.tones.forEach(item => addToneRow(item.freq, item.type, item.gain, item.playing, false));
-                    }
-
-                    synthTakes = [];
-                    activeLoopElements = activeLoopElements.filter(el => !el.isSynth);
-                    synthTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No synth takes recorded.</div>`;
-                    if (data.synthTakes && Array.isArray(data.synthTakes)) {
-                        data.synthTakes.forEach(st => addTakeUI(st.dataUrl, synthTakes, synthTakesList, 'Synth Take', true, false));
-                    }
-
-                    micTakes = [];
-                    activeLoopElements = activeLoopElements.filter(el => el.isSynth);
-                    micTakesList.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No mic takes recorded.</div>`;
-                    if (data.micTakes && Array.isArray(data.micTakes)) {
-                        data.micTakes.forEach(mt => addTakeUI(mt.dataUrl, micTakes, micTakesList, 'Mic Take', false, false));
-                    }
-                    logAction('Loaded session successfully');
-                } catch (err) { alert('Invalid session file.'); }
-                loadFileInput.value = '';
-            };
-            reader.readAsText(file);
-        });
-
-        async function exportDataUrlAsMp3(dataUrl, filename = "recording.mp3") {
-            try {
-                const response = await fetch(dataUrl);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                const channels = audioBuffer.numberOfChannels;
-                const sampleRate = audioBuffer.sampleRate;
-                const samples = audioBuffer.getChannelData(0);
-                
-                const buffer16 = new Int16Array(samples.length);
-                for (let i = 0; i < samples.length; i++) {
-                    let s = Math.max(-1, Math.min(1, samples[i]));
-                    buffer16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-                }
-
-                const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, 320);
-                const mp3Data = [];
-                const sampleBlockSize = 1152;
-
-                for (let i = 0; i < buffer16.length; i += sampleBlockSize) {
-                    let sampleChunk = buffer16.subarray(i, i + sampleBlockSize);
-                    let mp3buf = mp3encoder.encodeBuffer(sampleChunk);
-                    if (mp3buf.length > 0) mp3Data.push(mp3buf);
-                }
-                let mp3buf = mp3encoder.flush();
-                if (mp3buf.length > 0) mp3Data.push(new Int8Array(mp3buf));
-
-                const blob = new Blob(mp3Data, { type: 'audio/mp3' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = filename; a.click();
-                URL.revokeObjectURL(url);
-            } catch(e) {}
-        }
 
         class ToneUnit {
             constructor(freq = 416, type = 'sine', gainVal = 0.2, shouldPlay = false, recordUndo = true) {
@@ -1057,24 +712,24 @@
                 ['sine', 'square', 'sawtooth', 'triangle'].forEach(t => {
                     let opt = document.createElement('option');
                     opt.value = t; opt.textContent = t.toUpperCase().substring(0,3);
-                    if(t === this.type) opt.selected = true;
+                    if (t === this.type) opt.selected = true;
                     this.select.appendChild(opt);
                 });
                 this.select.addEventListener('change', e => { 
                     this.type = e.target.value; 
-                    if(this.isPlaying && this.osc) this.osc.type = this.type; 
+                    if (this.isPlaying && this.osc) this.osc.type = this.type; 
                 });
 
                 let box = document.createElement('div');
                 box.className = 'freq-box';
                 this.slider = document.createElement('input');
-                this.slider.type = 'range'; this.slider.min = '0.01'; this.slider.max = '30000'; this.slider.step = '0.01'; this.slider.value = this.freq;
+                this.slider.type = 'range'; this.slider.min = '0.01'; this.slider.max = '24000'; this.slider.step = '0.01'; this.slider.value = this.freq;
                 
                 let inputContainer = document.createElement('div');
                 inputContainer.className = 'freq-input-container';
 
                 this.input = document.createElement('input');
-                this.input.type = 'number'; this.input.min = '0.01'; this.input.max = '30000'; this.input.step = '0.01'; this.input.value = this.freq;
+                this.input.type = 'number'; this.input.min = '0.01'; this.input.max = '24000'; this.input.step = '0.01'; this.input.value = this.freq;
 
                 this.noteDisplay = document.createElement('div');
                 this.noteDisplay.className = 'note-display';
@@ -1083,23 +738,10 @@
                 inputContainer.appendChild(this.input);
                 inputContainer.appendChild(this.noteDisplay);
 
-                this.input.addEventListener('focus', () => { this.input.select(); });
-                this.input.addEventListener('click', () => { this.input.select(); });
-
-                this.input.addEventListener('wheel', e => {
-                    e.preventDefault();
-                    let stepVal = e.shiftKey ? 10 : (e.altKey ? 0.1 : 1);
-                    let cur = parseFloat(this.input.value) || 0;
-                    let newVal = e.deltaY < 0 ? cur + stepVal : cur - stepVal;
-                    newVal = Math.max(0.01, Math.min(30000, newVal));
-                    this.input.value = newVal.toFixed(2);
-                    this.updateFrequency(newVal);
-                });
-
                 this.slider.addEventListener('input', e => { this.updateFrequency(parseFloat(e.target.value)); });
                 this.input.addEventListener('input', e => {
                     let v = parseFloat(e.target.value);
-                    if(!isNaN(v)) this.updateFrequency(v);
+                    if (!isNaN(v)) this.updateFrequency(v);
                 });
 
                 box.appendChild(this.slider); 
@@ -1109,28 +751,25 @@
                 this.vol.type = 'range'; this.vol.min = '0'; this.vol.max = '1'; this.vol.step = '0.01'; this.vol.value = this.gainVal;
                 this.vol.addEventListener('input', e => {
                     this.gainVal = parseFloat(e.target.value);
-                    if(this.isPlaying && this.gain && audioCtx) {
+                    if (this.isPlaying && this.gain && audioCtx) {
                         this.gain.gain.setValueAtTime(this.gainVal, audioCtx.currentTime);
                     }
                 });
 
                 this.btn = document.createElement('button');
-                this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                this.btn.innerHTML = '▶';
                 this.btn.addEventListener('click', async () => {
-                    if(this.isPlaying) this.stop(); else await this.start();
+                    if (this.isPlaying) this.stop(); else await this.start();
                 });
 
                 this.del = document.createElement('button');
-                this.del.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+                this.del.innerHTML = '✕';
                 this.del.className = 'secondary';
                 this.del.addEventListener('click', () => {
-                    confirmAction(`Delete tone generator (${this.freq} Hz)?`, 'DELETE TONE GENERATOR', () => {
-                        recordState('Delete Tone Generator');
-                        this.stop(); 
-                        this.row.remove(); 
-                        tones.splice(tones.indexOf(this), 1);
-                        logAction('Deleted tone generator');
-                    });
+                    recordState('Delete Tone Generator');
+                    this.stop(); 
+                    this.row.remove(); 
+                    tones.splice(tones.indexOf(this), 1);
                 });
 
                 this.row.appendChild(this.select);
@@ -1139,11 +778,6 @@
                 this.row.appendChild(this.btn);
                 this.row.appendChild(this.del);
                 toneList.appendChild(this.row);
-
-                setTimeout(() => {
-                    this.input.focus();
-                    this.input.select();
-                }, 50);
 
                 if (this.shouldPlay) this.start();
             }
@@ -1154,21 +788,19 @@
             }
 
             updateFrequency(val) {
-                this.freq = Math.max(0.01, Math.min(30000, val));
+                let maxLimit = audioCtx ? audioCtx.sampleRate / 2 : 24000;
+                this.freq = Math.max(0.01, Math.min(maxLimit, val));
                 this.slider.value = this.freq;
                 this.input.value = this.freq;
                 this.updateNoteDisplay(this.freq);
-                if(this.isPlaying && this.osc && audioCtx) {
+                if (this.isPlaying && this.osc && audioCtx) {
                     try { this.osc.frequency.setValueAtTime(this.freq, audioCtx.currentTime); } catch(e) {}
                 }
             }
 
             async start() {
-                if(!isAudioInit) initAudioContext();
-                if(audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                    updateMasterToggleUI();
-                }
+                if (!isAudioInit) initAudioContext();
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
                 this.stop();
 
                 this.osc = audioCtx.createOscillator();
@@ -1180,14 +812,14 @@
                 this.gain.connect(synthBus);
                 this.osc.start();
                 this.isPlaying = true;
-                this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+                this.btn.innerHTML = '❚❚';
             }
 
             stop() {
-                if(this.osc) { try { this.osc.stop(); this.osc.disconnect(); } catch(e){} this.osc = null; }
-                if(this.gain) { try { this.gain.disconnect(); } catch(e){} this.gain = null; }
+                if (this.osc) { try { this.osc.stop(); this.osc.disconnect(); } catch(e){} this.osc = null; }
+                if (this.gain) { try { this.gain.disconnect(); } catch(e){} this.gain = null; }
                 this.isPlaying = false;
-                this.btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+                this.btn.innerHTML = '▶';
             }
         }
 
@@ -1195,286 +827,30 @@
             tones.push(new ToneUnit(freq, type, gain, shouldPlay, recordUndo));
         }
 
-        addToneBtn.addEventListener('click', () => { 
-            addToneRow(416, 'sine', 0.15, true, true); 
-            logAction('Added new tone generator');
+        addToneBtn.addEventListener('click', () => { addToneRow(416, 'sine', 0.15, true, true); });
+
+        canvasContainer.addEventListener('mousemove', (e) => {
+            let rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            isHoveringSpectrum = (x >= 0 && x <= rect.width);
+            hoverXRatio = isHoveringSpectrum ? x / rect.width : 0;
         });
+        canvasContainer.addEventListener('mouseleave', () => { isHoveringSpectrum = false; });
 
         canvasContainer.addEventListener('click', (e) => {
             let rect = canvas.getBoundingClientRect();
             let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            if (x < 0 || x > rect.width || y < 0 || y > rect.height) return;
-
-            let maxFreq = 30000 / spectrometerZoomX;
-            let freqRatio = x / rect.width;
-            let freq = freqRatio * maxFreq;
-
+            if (x < 0 || x > rect.width) return;
+            let maxFreq = audioCtx ? audioCtx.sampleRate / 2 : 24000;
+            let freq = (x / rect.width) * maxFreq;
             recordState('Add Spectrogram Marker');
-            markers.push({ freq: freq, xRatio: freqRatio, timestamp: Date.now() });
-            logAction(`Added line marker at ${freq.toFixed(2)} Hz`);
+            markers.push({ freq: freq, xRatio: x / rect.width, timestamp: Date.now() });
         });
-
-        let synthDestStream = null;
-        let isRecordingSynth = false;
-        let synthRecorderNode = null;
-
-        recTakeBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
-            if(!synthRecorderNode) {
-                synthRecorderNode = audioCtx.createMediaStreamDestination();
-                synthBus.connect(synthRecorderNode);
-                synthDestStream = synthRecorderNode.stream;
-            }
-
-            if(!isRecordingSynth) {
-                synthRecordedChunks = [];
-                let options = { mimeType: 'audio/webm' };
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options = {}; // Fallback to safe environment default format
-                }
-
-                synthMediaRecorder = new MediaRecorder(synthDestStream, options);
-                synthMediaRecorder.ondataavailable = e => synthRecordedChunks.push(e.data);
-                synthMediaRecorder.onstop = () => {
-                    let blob = new Blob(synthRecordedChunks, { type: 'audio/webm' });
-                    let reader = new FileReader();
-                    reader.onload = function(e) { addTakeUI(e.target.result, synthTakes, synthTakesList, 'Synth Take', true, true); };
-                    reader.readAsDataURL(blob);
-                };
-                synthMediaRecorder.start();
-                isRecordingSynth = true;
-                recTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Stop';
-                recTakeBtn.style.backgroundColor = 'var(--accent-yellow)';
-                logAction('Started recording synth loop');
-            } else {
-                synthMediaRecorder.stop();
-                isRecordingSynth = false;
-                recTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec';
-                recTakeBtn.style.backgroundColor = 'var(--accent-red)';
-                logAction('Stopped & saved synth loop');
-            }
-        });
-
-        let isRecordingMic = false;
-        recMicTakeBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
-            if(!isRecordingMic) {
-                try {
-                    let stream = micStream || await navigator.mediaDevices.getUserMedia({ audio: true });
-                    micRecordedChunks = [];
-                    // Removed forced high bitrate parameter to avoid mobile hardware rejection crashes
-                    let options = { mimeType: 'audio/webm' };
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options = {};
-                    }
-
-                    micMediaRecorder = new MediaRecorder(stream, options);
-                    micMediaRecorder.ondataavailable = e => micRecordedChunks.push(e.data);
-                    micMediaRecorder.onstop = () => {
-                        let blob = new Blob(micRecordedChunks, { type: 'audio/webm' });
-                        let reader = new FileReader();
-                        reader.onload = function(e) { addTakeUI(e.target.result, micTakes, micTakesList, 'Mic Take', false, true); };
-                        reader.readAsDataURL(blob);
-                    };
-                    micMediaRecorder.start();
-                    isRecordingMic = true;
-                    recMicTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> Stop';
-                    recMicTakeBtn.style.backgroundColor = 'var(--accent-yellow)';
-                    logAction('Started recording mic loop');
-                } catch(e) {}
-            } else {
-                micMediaRecorder.stop();
-                isRecordingMic = false;
-                recMicTakeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg> Rec Mic';
-                recMicTakeBtn.style.backgroundColor = 'var(--accent-red)';
-                logAction('Stopped & saved mic loop');
-            }
-        });
-
-        function addTakeUI(dataUrl, takesArray, containerEl, labelPrefix, isSynth, recordUndo = true) {
-            if (recordUndo) recordState(`Record ${labelPrefix}`);
-            if(takesArray.length === 0) containerEl.innerHTML = '';
-            let takeId = takesArray.length + 1;
-            let audioEl = new Audio(dataUrl);
-            audioEl.loop = true;
-            let sourceNode = null;
-            
-            takesArray.push({ name: `${labelPrefix} ${takeId}`, dataUrl: dataUrl });
-
-            let row = document.createElement('div');
-            row.className = 'take-row';
-            
-            let topBar = document.createElement('div');
-            topBar.className = 'take-top-bar';
-
-            let takeInfo = document.createElement('div');
-            takeInfo.className = 'take-info';
-            takeInfo.innerHTML = `<span>${labelPrefix} ${takeId}</span>`;
-
-            let timerSpan = document.createElement('span');
-            timerSpan.className = 'take-timer';
-            timerSpan.textContent = "00:00";
-            takeInfo.appendChild(timerSpan);
-            topBar.appendChild(takeInfo);
-            
-            let btnGroup = document.createElement('div');
-            btnGroup.className = 'compact-group';
-
-            let playBtn = document.createElement('button');
-            playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-            playBtn.className = 'secondary';
-
-            let removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-            removeBtn.className = 'secondary';
-            removeBtn.style.borderColor = 'var(--accent-red)';
-            removeBtn.style.color = 'var(--accent-red)';
-
-            btnGroup.appendChild(playBtn);
-            btnGroup.appendChild(removeBtn);
-            topBar.appendChild(btnGroup);
-            row.appendChild(topBar);
-
-            let waveformContainer = document.createElement('div');
-            waveformContainer.className = 'waveform-container';
-
-            let waveCanvas = document.createElement('canvas');
-            waveCanvas.className = 'waveform-canvas';
-            waveformContainer.appendChild(waveCanvas);
-
-            let playhead = document.createElement('div');
-            playhead.className = 'playhead-indicator';
-            waveformContainer.appendChild(playhead);
-
-            row.appendChild(waveformContainer);
-            containerEl.appendChild(row);
-
-            let loopItemRef = { audio: audioEl, playBtn: playBtn, timer: timerSpan, sourceNode: sourceNode, isSynth: isSynth, playhead: playhead };
-            activeLoopElements.push(loopItemRef);
-
-            fetch(dataUrl)
-                .then(res => res.arrayBuffer())
-                .then(buf => audioCtx ? audioCtx.decodeAudioData(buf) : null)
-                .then(decodedBuffer => {
-                    if (decodedBuffer) {
-                        drawWaveform(decodedBuffer, waveCanvas);
-                    }
-                }).catch(e => {});
-
-            waveformContainer.addEventListener('click', (e) => {
-                let rect = waveformContainer.getBoundingClientRect();
-                let clickX = e.clientX - rect.left;
-                let pct = Math.max(0, Math.min(1, clickX / rect.width));
-                if (audioEl.duration) {
-                    audioEl.currentTime = pct * audioEl.duration;
-                    playhead.style.left = `${pct * 100}%`;
-                }
-            });
-
-            audioEl.addEventListener('loadedmetadata', () => {
-                if(!isNaN(audioEl.duration) && audioEl.duration !== Infinity) timerSpan.textContent = formatTime(audioEl.duration);
-            });
-
-            audioEl.addEventListener('timeupdate', () => {
-                if (!audioEl.paused) {
-                    timerSpan.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration || 0)}`;
-                    if (audioEl.duration) {
-                        let pct = (audioEl.currentTime / audioEl.duration) * 100;
-                        playhead.style.left = `${pct}%`;
-                    }
-                }
-            });
-
-            playBtn.addEventListener('click', async () => {
-                if (audioCtx && audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                }
-                if(audioEl.paused) { 
-                    if (!loopItemRef.sourceNode && audioCtx) {
-                        loopItemRef.sourceNode = audioCtx.createMediaElementSource(audioEl);
-                        loopItemRef.sourceNode.connect(loopBus);
-                    }
-                    audioEl.play(); 
-                    playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'; 
-                    playBtn.style.color = 'var(--accent-red)';
-                } else { 
-                    audioEl.pause(); 
-                    audioEl.currentTime = 0; 
-                    playhead.style.left = '0%';
-                    playBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'; 
-                    playBtn.style.color = 'var(--accent-yellow)'; 
-                    timerSpan.textContent = formatTime(audioEl.duration || 0);
-                }
-            });
-
-            removeBtn.addEventListener('click', () => {
-                confirmAction(`Delete recorded ${labelPrefix}?`, 'DELETE RECORDED LOOP', () => {
-                    recordState(`Delete ${labelPrefix}`);
-                    audioEl.pause();
-                    row.remove();
-                    let idx = takesArray.findIndex(t => t.dataUrl === dataUrl);
-                    if(idx > -1) takesArray.splice(idx, 1);
-                    let refIdx = activeLoopElements.indexOf(loopItemRef);
-                    if(refIdx > -1) activeLoopElements.splice(refIdx, 1);
-                    if(takesArray.length === 0) {
-                        containerEl.innerHTML = `<div style="color: var(--text-muted); font-size:calc(10px * var(--ui-scale)); text-align:center; margin-top:10px;">No takes recorded.</div>`;
-                    }
-                    logAction('Deleted recorded loop');
-                });
-            });
-        }
-
-        function drawWaveform(audioBuffer, canvasEl) {
-            let ctx = canvasEl.getContext('2d');
-            let w = canvasEl.width = canvasEl.offsetWidth || 300;
-            let h = canvasEl.height = canvasEl.offsetHeight || 36;
-            
-            ctx.fillStyle = '#040404';
-            ctx.fillRect(0, 0, w, h);
-
-            let rawData = audioBuffer.getChannelData(0);
-            let samplesPerPixel = Math.floor(rawData.length / w);
-            let centerY = h / 2;
-
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#cc9900';
-            ctx.beginPath();
-
-            for (let x = 0; x < w; x++) {
-                let min = 1.0;
-                let max = -1.0;
-                for (let j = 0; j < samplesPerPixel; j++) {
-                    let val = rawData[(x * samplesPerPixel) + j];
-                    if (val < min) min = val;
-                    if (val > max) max = val;
-                }
-                let yMin = (1 + min) * centerY;
-                let yMax = (1 + max) * centerY;
-                ctx.moveTo(x, yMin);
-                ctx.lineTo(x, yMax);
-            }
-            ctx.stroke();
-        }
-
-        function formatTime(seconds) {
-            let mins = Math.floor(seconds / 60);
-            let secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
 
         micToggleBtn.addEventListener('click', async () => {
-            if(!isAudioInit) initAudioContext();
-            if(audioCtx && audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
-            if(!isMicActive) {
+            if (!isAudioInit) initAudioContext();
+            if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+            if (!isMicActive) {
                 try {
                     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     micSource = audioCtx.createMediaStreamSource(micStream);
@@ -1484,151 +860,97 @@
                     isMicActive = true;
                     micToggleBtn.style.borderColor = 'var(--accent-red)';
                     micToggleBtn.style.color = 'var(--accent-red)';
-                    logAction('Microphone activated');
                 } catch(e) {}
             } else {
-                if(micStream) micStream.getTracks().forEach(t => t.stop());
-                if(micSource) micSource.disconnect();
+                if (micStream) micStream.getTracks().forEach(t => t.stop());
+                if (micSource) micSource.disconnect();
                 micStream = null; micSource = null; micAnalyser = null;
                 isMicActive = false;
                 micToggleBtn.style.borderColor = 'var(--border-color)';
                 micToggleBtn.style.color = 'var(--text-muted)';
-                logAction('Microphone deactivated');
             }
         });
 
-        let lastFrameTime = performance.now();
         function drawVisualizer() {
             requestAnimationFrame(drawVisualizer);
-            let now = performance.now();
-            let deltaTime = (now - lastFrameTime) / 1000;
-            lastFrameTime = now;
-
-            let w = canvas.width = canvas.offsetWidth * 2; // Double resolution
-            let h = canvas.height = canvas.offsetHeight * 2; // Double resolution
+            let w = canvas.width = canvas.offsetWidth * 2;
+            let h = canvas.height = canvas.offsetHeight * 2;
             canvasCtx.fillStyle = '#020202';
             canvasCtx.fillRect(0, 0, w, h);
 
-            if(!analyser || !isAudioInit) return;
+            if (!analyser || !isAudioInit) return;
             let bufferLength = analyser.frequencyBinCount;
             let data = new Uint8Array(bufferLength);
             analyser.getByteFrequencyData(data);
 
-            if(isMicActive && micAnalyser) {
+            if (isMicActive && micAnalyser) {
                 let micData = new Uint8Array(bufferLength);
                 micAnalyser.getByteFrequencyData(micData);
-                for(let i = 0; i < bufferLength; i++) {
+                for (let i = 0; i < bufferLength; i++) {
                     data[i] = Math.max(data[i], micData[i]);
                 }
             }
 
             let nyquist = audioCtx.sampleRate / 2;
-            let maxDisplayFreq = 30000 / spectrometerZoomX;
-            let maxIndexToCheck = Math.floor((maxDisplayFreq / nyquist) * bufferLength);
-            maxIndexToCheck = Math.min(maxIndexToCheck, bufferLength);
+            let maxIndexToCheck = bufferLength;
 
-            let maxVal = 0;
-            let maxIndex = 0;
-            for(let i = 0; i < maxIndexToCheck; i++) {
-                if(data[i] > maxVal) { maxVal = data[i]; maxIndex = i; }
+            let maxVal = 0, maxIndex = 0;
+            for (let i = 0; i < maxIndexToCheck; i++) {
+                if (data[i] > maxVal) { maxVal = data[i]; maxIndex = i; }
             }
-            let peakFreq = (maxIndex * nyquist) / bufferLength;
+
+            // Quadratic interpolation for accurate sub-bin peak calculation
+            let exactBin = maxIndex;
+            if (maxIndex > 0 && maxIndex < bufferLength - 1) {
+                let alpha = data[maxIndex - 1];
+                let beta = data[maxIndex];
+                let gamma = data[maxIndex + 1];
+                let delta = 0.5 * (alpha - gamma) / (alpha - 2 * beta + gamma);
+                if (!isNaN(delta)) exactBin += delta;
+            }
+            let peakFreq = (exactBin * nyquist) / bufferLength;
             let peakDb = (maxVal / 255) * 90 - 90;
             peakFreqDisplay.textContent = `PEAK: ${peakFreq.toFixed(2)} Hz (${peakDb.toFixed(1)} dB)`;
 
-            let totalSum = 0;
-            let highPitchStartIdx = Math.floor(maxIndexToCheck * 0.25); 
-            for (let i = 0; i < maxIndexToCheck; i++) {
-                totalSum += data[i];
-            }
-            let averageMag = totalSum / maxIndexToCheck;
-            let considerableLoudnessThreshold = Math.max(25, averageMag * 1.5);
-
-            canvasCtx.strokeStyle = '#0e0e0e';
-            canvasCtx.lineWidth = 2;
-            for(let i = 1; i < 4; i++) {
-                let y = (h / 4) * i;
-                canvasCtx.beginPath(); canvasCtx.moveTo(0, y); canvasCtx.lineTo(w, y); canvasCtx.stroke();
-            }
-
             let barW = w / maxIndexToCheck;
             let x = 0;
-            for(let i = 0; i < maxIndexToCheck; i++) {
+            for (let i = 0; i < maxIndexToCheck; i++) {
                 let barH = (data[i] / 255) * h;
                 let redVal = Math.min(255, barH * 2);
                 canvasCtx.fillStyle = `rgb(${redVal}, ${Math.floor(160 - (barH/2))}, 20)`;
                 canvasCtx.fillRect(x, h - barH, Math.max(2, barW), barH);
                 x += barW;
-                if(x > w) break;
-            }
-
-            let currentActiveBuckets = new Set();
-            for (let i = highPitchStartIdx; i < maxIndexToCheck - 1; i++) {
-                if (data[i] >= considerableLoudnessThreshold && data[i] >= data[i-1] && data[i] >= data[i+1]) {
-                    let freq = (i * nyquist) / bufferLength;
-                    let bucketKey = Math.round(freq / 20) * 20; 
-                    currentActiveBuckets.add(bucketKey);
-
-                    if (!sustainedHighPitchTracker.has(bucketKey)) {
-                        sustainedHighPitchTracker.set(bucketKey, { duration: 0, exactFreq: freq, marked: false });
-                    }
-                    
-                    let trackInfo = sustainedHighPitchTracker.get(bucketKey);
-                    trackInfo.duration += deltaTime;
-                    trackInfo.exactFreq = freq;
-
-                    if (trackInfo.duration >= 5.0 && !trackInfo.marked) {
-                        trackInfo.marked = true;
-                        let freqRatio = freq / maxDisplayFreq;
-                        if (freqRatio >= 0 && freqRatio <= 1) {
-                            let existingClose = markers.some(m => Math.abs(m.freq - freq) < 100);
-                            if (!existingClose) {
-                                markers.push({ freq: freq, xRatio: freqRatio, timestamp: Date.now() });
-                                logAction(`Auto-marked sustained high tone at ${freq.toFixed(1)} Hz`);
-                            }
-                        }
-                    }
-                }
-            }
-
-            for (let [bucketKey, trackInfo] of sustainedHighPitchTracker.entries()) {
-                if (!currentActiveBuckets.has(bucketKey)) {
-                    trackInfo.duration = Math.max(0, trackInfo.duration - deltaTime * 2);
-                    if (trackInfo.duration <= 0) {
-                        sustainedHighPitchTracker.delete(bucketKey);
-                    }
-                }
+                if (x > w) break;
             }
 
             markers.forEach((m, idx) => {
-                let freqRatio = m.freq / maxDisplayFreq;
+                let freqRatio = m.freq / nyquist;
                 if (freqRatio < 0 || freqRatio > 1) return;
                 let mx = freqRatio * w;
-                let binIdx = Math.floor((m.freq / nyquist) * bufferLength);
-                let binVal = (binIdx >= 0 && binIdx < bufferLength) ? data[binIdx] : 0;
-                let barH = (binVal / 255) * h;
-                let topY = h - barH;
-
-                canvasCtx.strokeStyle = 'rgba(204, 17, 17, 0.45)';
-                canvasCtx.lineWidth = 6;
-                canvasCtx.beginPath();
-                canvasCtx.moveTo(mx, topY);
-                canvasCtx.lineTo(mx, h);
-                canvasCtx.stroke();
-
+                
                 canvasCtx.strokeStyle = 'rgba(204, 153, 0, 0.4)';
                 canvasCtx.lineWidth = 2;
                 canvasCtx.setLineDash([4, 4]);
                 canvasCtx.beginPath();
-                canvasCtx.moveTo(mx, 0);
-                canvasCtx.lineTo(mx, h);
-                canvasCtx.stroke();
+                canvasCtx.moveTo(mx, 0); canvasCtx.lineTo(mx, h); canvasCtx.stroke();
                 canvasCtx.setLineDash([]);
 
                 canvasCtx.fillStyle = '#e0e0e0';
                 canvasCtx.font = '20px monospace';
-                canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 8, Math.max(20, topY - 8));
+                canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 8, 25);
             });
+
+            if (isHoveringSpectrum) {
+                let hx = hoverXRatio * w;
+                let hoverFreq = hoverXRatio * nyquist;
+                canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+                canvasCtx.lineWidth = 2;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(hx, 0); canvasCtx.lineTo(hx, h); canvasCtx.stroke();
+                canvasCtx.fillStyle = '#00ffff';
+                canvasCtx.font = '20px monospace';
+                canvasCtx.fillText(`${hoverFreq.toFixed(1)} Hz`, hx + 8, 50);
+            }
         }
     </script>
 </body>
