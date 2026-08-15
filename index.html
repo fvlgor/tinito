@@ -391,7 +391,6 @@
         let spectrometerSizeState = 0;
         let sessionStartTime = Date.now();
 
-        // Mouse Hover tracking states for Spectrogram
         let mouseX = -1;
         let mouseY = -1;
         let isHoveringCanvas = false;
@@ -802,7 +801,7 @@
         function initAudioContext() {
             if (isAudioInit) return;
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioCtx = new AudioContext({ sampleRate: 96000 });
+            audioCtx = new AudioContext(); // Removed forced sampleRate: 96000 for mobile compatibility
 
             masterGain = audioCtx.createGain();
             masterGain.gain.value = parseFloat(masterVolume.value);
@@ -1210,7 +1209,6 @@
             logAction(`Added line marker at ${freq.toFixed(2)} Hz`);
         });
 
-        // Mouse hover tracking event listeners for Canvas Container
         canvasContainer.addEventListener('mousemove', (e) => {
             let rect = canvas.getBoundingClientRect();
             mouseX = e.clientX - rect.left;
@@ -1238,10 +1236,11 @@
 
             if(!isRecordingSynth) {
                 synthRecordedChunks = [];
-                synthMediaRecorder = new MediaRecorder(synthDestStream);
+                let options = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? { mimeType: 'audio/webm;codecs=opus' } : {};
+                synthMediaRecorder = new MediaRecorder(synthDestStream, options);
                 synthMediaRecorder.ondataavailable = e => synthRecordedChunks.push(e.data);
                 synthMediaRecorder.onstop = () => {
-                    let blob = new Blob(synthRecordedChunks, { type: 'audio/webm' });
+                    let blob = new Blob(synthRecordedChunks, { type: synthMediaRecorder.mimeType || 'audio/webm' });
                     let reader = new FileReader();
                     reader.onload = function(e) { addTakeUI(e.target.result, synthTakes, synthTakesList, 'Synth Take', true, true); };
                     reader.readAsDataURL(blob);
@@ -1267,13 +1266,12 @@
                 try {
                     let stream = micStream || await navigator.mediaDevices.getUserMedia({ audio: true });
                     micRecordedChunks = [];
-                    let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 320000 };
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { audioBitsPerSecond: 320000 };
+                    let options = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 128000 } : {};
 
                     micMediaRecorder = new MediaRecorder(stream, options);
                     micMediaRecorder.ondataavailable = e => micRecordedChunks.push(e.data);
                     micMediaRecorder.onstop = () => {
-                        let blob = new Blob(micRecordedChunks, { type: 'audio/webm' });
+                        let blob = new Blob(micRecordedChunks, { type: micMediaRecorder.mimeType || 'audio/webm' });
                         let reader = new FileReader();
                         reader.onload = function(e) { addTakeUI(e.target.result, micTakes, micTakesList, 'Mic Take', false, true); };
                         reader.readAsDataURL(blob);
@@ -1493,8 +1491,8 @@
             let deltaTime = (now - lastFrameTime) / 1000;
             lastFrameTime = now;
 
-            let w = canvas.width = canvas.offsetWidth * 2; // Double resolution
-            let h = canvas.height = canvas.offsetHeight * 2; // Double resolution
+            let w = canvas.width = canvas.offsetWidth * 2;
+            let h = canvas.height = canvas.offsetHeight * 2;
             canvasCtx.fillStyle = '#020202';
             canvasCtx.fillRect(0, 0, w, h);
 
@@ -1619,13 +1617,11 @@
                 canvasCtx.fillText(`#${idx + 1}: ${m.freq.toFixed(0)}Hz`, mx + 8, Math.max(20, topY - 8));
             });
 
-            // Draw translucent aqua line and Hz reading on hover
             if (isHoveringCanvas && mouseX >= 0) {
                 let rectWidth = canvas.getBoundingClientRect().width;
                 let hoverFreqRatio = mouseX / rectWidth;
                 let hoverFreq = hoverFreqRatio * maxDisplayFreq;
 
-                // Draw translucent aqua line
                 canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
                 canvasCtx.lineWidth = 2;
                 canvasCtx.beginPath();
@@ -1633,7 +1629,6 @@
                 canvasCtx.lineTo(mouseX * 2, h);
                 canvasCtx.stroke();
 
-                // Draw Hz reading box
                 canvasCtx.fillStyle = 'rgba(9, 9, 9, 0.85)';
                 canvasCtx.fillRect(mouseX * 2 + 10, mouseY * 2 - 25, 110, 24);
                 canvasCtx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
